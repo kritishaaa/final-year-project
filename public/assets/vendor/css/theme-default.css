@@ -544,7 +544,7 @@ button.list-group-item-primary.active {
     background: transparent;
 }
 .menu.bg-primary .menu-text {
-    color: #fff;
+    color: #e8634b;
 }
 .menu.bg-primary .menu-header {
     color: #c2c4ff;
@@ -753,7 +753,7 @@ a:hover {
 }
 
 .bg-menu-theme {
-    background-color: #01399a !important;
+    background-color: #45474b !important;
     color: #697a8d;
 }
 .bg-menu-theme .menu-link,
@@ -817,7 +817,7 @@ a:hover {
     background: transparent;
 }
 .bg-menu-theme .menu-text {
-    color: #ffffff;
+    color: #e8634b;
 }
 .bg-menu-theme .menu-header {
     color: #8f9baa;
