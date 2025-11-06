@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be4e32d189117d7f2dfd7362d9269feb",
+    "content-hash": "370e188c1d4173917a56e945bd92aeed",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -1205,34 +1205,32 @@
         },
         {
             "name": "jantinnerezo/livewire-alert",
-            "version": "v4.0.7",
+            "version": "v3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jantinnerezo/livewire-alert.git",
-                "reference": "d85e7d53d49251e8a9cbe8586492ac98ac86fa48"
+                "reference": "7466b71df6b237dd49dcd741fd872dfaa47977fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jantinnerezo/livewire-alert/zipball/d85e7d53d49251e8a9cbe8586492ac98ac86fa48",
-                "reference": "d85e7d53d49251e8a9cbe8586492ac98ac86fa48",
+                "url": "https://api.github.com/repos/jantinnerezo/livewire-alert/zipball/7466b71df6b237dd49dcd741fd872dfaa47977fe",
+                "reference": "7466b71df6b237dd49dcd741fd872dfaa47977fe",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^5.5 || ^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0|^11.0|^12.0",
                 "livewire/livewire": "^3.0",
-                "php": "^8.1"
+                "php": "^8.1|^8.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.70",
-                "orchestra/testbench": "^8.0|^9.0|^10.0",
-                "phpstan/phpstan": "^2.1",
+                "orchestra/testbench": "^6.15|^7.0|^8.0|^9.0|^10.0",
                 "phpunit/phpunit": "^9.5|^10.0|^11.5.3"
             },
             "type": "library",
             "extra": {
                 "laravel": {
                     "aliases": {
-                        "LivewireAlert": "Jantinnerezo\\LivewireAlert\\LivewireAlert"
+                        "LivewireAlert": "Jantinnerezo\\LivewireAlert\\LivewireAlertFacade"
                     },
                     "providers": [
                         "Jantinnerezo\\LivewireAlert\\LivewireAlertServiceProvider"
@@ -1263,9 +1261,9 @@
             ],
             "support": {
                 "issues": "https://github.com/jantinnerezo/livewire-alert/issues",
-                "source": "https://github.com/jantinnerezo/livewire-alert/tree/v4.0.7"
+                "source": "https://github.com/jantinnerezo/livewire-alert/tree/v3.0.3"
             },
-            "time": "2025-09-30T18:13:12+00:00"
+            "time": "2025-02-26T13:38:27+00:00"
         },
         {
             "name": "laravel/framework",
