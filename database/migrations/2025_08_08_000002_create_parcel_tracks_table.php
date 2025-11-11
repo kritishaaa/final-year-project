@@ -10,10 +10,12 @@ class CreateParcelTracksTable extends Migration
     public function up()
     {
         Schema::create('parcel_tracks', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->unsignedBigInteger('parcel_id');
             $table->tinyInteger('status');
-            $table->dateTime('date_created')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->string('location')->nullable();
+             $table->timestamps();
+
 
            
         });
