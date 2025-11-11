@@ -1,29 +1,70 @@
-<ul class="menu-inner py-1">
-    <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('admin.dashboard') ? 'active' : '' }}">
-        <a href="{{ route('admin.dashboard') }}" class="menu-link">
-            <i class="menu-icon tf-icons bx bx-grid-alt"></i>
-            <div data-i18n="Analytics">{{ __('Main Menu') }}</div>
+<ul class="menu-inner space-y-1 py-4">
+    <li class="menu-item">
+        <a href="{{ route('admin.dashboard') }}" 
+           class="menu-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ \Illuminate\Support\Facades\Route::is('admin.dashboard') ? 'bg-orange-50 text-orange-600 border-l-4 border-orange-500' : 'text-gray-700 hover:bg-gray-50' }}">
+            <i class="menu-icon bx bx-grid-alt text-lg"></i>
+            <div class="font-medium text-sm">{{ __('Dashboard') }}</div>
+            @if(\Illuminate\Support\Facades\Route::is('admin.dashboard'))
+                <span class="ml-auto w-2 h-2 bg-orange-500 rounded-full"></span>
+            @endif
         </a>
     </li>
 
-     <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('admin.users.index') ? 'active' : '' }}">
-            <a href="{{ route('admin.users.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-user"></i>
-                <div data-i18n="Users">{{ __('Users') }}</div>
-            </a>
-        </li>
+    <li class="menu-item">
+        <a href="{{ route('admin.users.index') }}" 
+           class="menu-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ \Illuminate\Support\Facades\Route::is('admin.users.index') ? 'bg-orange-50 text-orange-600 border-l-4 border-orange-500' : 'text-gray-700 hover:bg-gray-50' }}">
+            <i class="menu-icon bx bx-user text-lg"></i>
+            <div class="font-medium text-sm">{{ __('Users') }}</div>
+            @if(\Illuminate\Support\Facades\Route::is('admin.users.index'))
+                <span class="ml-auto w-2 h-2 bg-orange-500 rounded-full"></span>
+            @endif
+        </a>
+    </li>
 
-     <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('admin.branches.index') ? 'active' : '' }}">
-            <a href="{{ route('admin.branches.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-user"></i>
-                <div data-i18n="Branch">{{ __('Branch') }}</div>
-            </a>
-        </li>
-     <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('admin.couriers.index') ? 'active' : '' }}">
-            <a href="{{ route('admin.couriers.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-user"></i>
-                <div data-i18n="Courier">{{ __('Courier') }}</div>
-            </a>
-        </li>
+    <li class="menu-item">
+        <a href="{{ route('admin.branches.index') }}" 
+           class="menu-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ \Illuminate\Support\Facades\Route::is('admin.branches.index') ? 'bg-orange-50 text-orange-600 border-l-4 border-orange-500' : 'text-gray-700 hover:bg-gray-50' }}">
+            <i class="menu-icon bx bx-building text-lg"></i>
+            <div class="font-medium text-sm">{{ __('Branches') }}</div>
+            @if(\Illuminate\Support\Facades\Route::is('admin.branches.index'))
+                <span class="ml-auto w-2 h-2 bg-orange-500 rounded-full"></span>
+            @endif
+        </a>
+    </li>
 
+    <li class="menu-item">
+        <a href="{{ route('admin.couriers.index') }}" 
+           class="menu-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ \Illuminate\Support\Facades\Route::is('admin.couriers.index') ? 'bg-orange-50 text-orange-600 border-l-4 border-orange-500' : 'text-gray-700 hover:bg-gray-50' }}">
+            <i class="menu-icon bx bx-car text-lg"></i>
+            <div class="font-medium text-sm">{{ __('Couriers') }}</div>
+            @if(\Illuminate\Support\Facades\Route::is('admin.couriers.index'))
+                <span class="ml-auto w-2 h-2 bg-orange-500 rounded-full"></span>
+            @endif
+        </a>
+    </li>
+
+    <li class="menu-item">
+        <a href="{{ route('admin.parcels.index') }}" 
+           class="menu-link flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 {{ \Illuminate\Support\Facades\Route::is('admin.parcels.index') ? 'bg-orange-50 text-orange-600 border-l-4 border-orange-500' : 'text-gray-700 hover:bg-gray-50' }}">
+            <i class="menu-icon bx bx-package text-lg"></i>
+            <div class="font-medium text-sm">{{ __('Parcels') }}</div>
+            @if(\Illuminate\Support\Facades\Route::is('admin.parcels.index'))
+                <span class="ml-auto w-2 h-2 bg-orange-500 rounded-full"></span>
+            @endif
+        </a>
+    </li>
 </ul>
+
+<style>
+    :root {
+        --orange-primary: #e8634b;
+    }
+    
+    .menu-link {
+        position: relative;
+    }
+    
+    .menu-link:hover:not(.active) {
+        background-color: rgba(232, 99, 75, 0.05);
+    }
+</style>
