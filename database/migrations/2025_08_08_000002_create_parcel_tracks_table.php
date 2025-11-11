@@ -15,8 +15,7 @@ class CreateParcelTracksTable extends Migration
             $table->tinyInteger('status');
             $table->dateTime('date_created')->default(DB::raw('CURRENT_TIMESTAMP'));
 
-            // If you want a foreign key constraint uncomment the following line
-            // $table->foreign('parcel_id')->references('id')->on('parcels')->onDelete('cascade');
+           
         });
     }
 

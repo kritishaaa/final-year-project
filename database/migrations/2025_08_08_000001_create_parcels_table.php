@@ -10,24 +10,22 @@ class CreateParcelsTable extends Migration
     public function up()
     {
         Schema::create('parcels', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('reference_number', 100);
-            $table->text('sender_name');
-            $table->text('sender_address');
-            $table->text('sender_contact');
-            $table->text('recipient_name');
+            
+            $table->string('tracking_code', 50)->unique();
+            $table->string('sender_name');
+            $table->string('sender_address');
+            $table->string('sender_contact');
+            $table->foreignId('from_branch_id')->constrained('branches')->onDelete('cascade');
+            $table->foreignId('to_branch_id')->constrained('branches')->onDelete('cascade');
+            $table->decimal('weight', 8, 2);
+            $table->decimal('distance', 10, 2)->nullable();
+            $table->decimal('price', 10, 2)->nullable();
+            $table->enum('status', ['pending', 'in_transit', 'delivered', 'cancelled'])->default('pending');
+            $table->string('recipient_name');
+            $table->string('recipient_contact');
             $table->text('recipient_address');
-            $table->text('recipient_contact');
-            $table->tinyInteger('type'); // 1 = Deliver, 2 = Pickup
-            $table->string('from_branch_id', 30);
-            $table->string('to_branch_id', 30);
-            $table->string('weight', 100);
-            $table->string('height', 100);
-            $table->string('width', 100);
-            $table->string('length', 100);
-            $table->float('price');
-            $table->tinyInteger('status')->default(0);
-            $table->dateTime('date_created')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->text('remarks')->nullable();
+            $table->timestamps();
         });
     }
 

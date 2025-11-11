@@ -13,9 +13,9 @@ class CreateLocationsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name', 255);
             $table->text('address')->nullable();
-            $table->double('latitude', 10, 6)->nullable();
-            $table->double('longitude', 10, 6)->nullable();
-            $table->dateTime('date_created')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
+           $table->timestamps();
         });
     }
 

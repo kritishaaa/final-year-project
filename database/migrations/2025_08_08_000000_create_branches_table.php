@@ -11,14 +11,12 @@ class CreateBranchesTable extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('branch_code', 50);
-            $table->text('street');
-            $table->text('city');
-            $table->text('state');
-            $table->string('zip_code', 50);
-            $table->text('country');
-            $table->string('contact', 100);
-            $table->dateTime('date_created')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->string('name', 100);
+            $table->string('code', 10)->unique();
+            $table->string('address', 255);
+            $table->decimal('latitude', 10, 6);
+            $table->decimal('longitude', 10, 6);
+            $table->timestamps();
         });
     }
 
