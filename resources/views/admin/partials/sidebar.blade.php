@@ -13,4 +13,11 @@
             </a>
         </li>
 
+     <li class="menu-item {{ \Illuminate\Support\Facades\Route::is('admin.branches.index') ? 'active' : '' }}">
+            <a href="{{ route('admin.branches.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div data-i18n="Branch">{{ __('Branch') }}</div>
+            </a>
+        </li>
+
 </ul>
