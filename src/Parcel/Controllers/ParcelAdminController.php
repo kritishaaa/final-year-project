@@ -25,9 +25,9 @@ class ParcelAdminController extends Controller
 
     function edit(Request $request)
     {
-        $user = Parcel::find($request->route('id'));
+        $parcel = Parcel::find($request->route('id'));
         $action = Action::UPDATE;
        
-        return view('Parcel::form')->with(compact('action'));
+        return view('Parcel::form')->with(compact('action', 'parcel') );
     }
 }

@@ -33,10 +33,10 @@ class ParcelAdminService
         return $parcel;
     }
 
-    public function update(Parcel $parcel, ParcelAdminDto $parcelAdminDto): bool
+    public function update(Parcel $parcel, ParcelAdminDto $parcelAdminDto)
     {
 
-        $updateData = [
+        return tap($parcel)->update([
             'tracking_code' => $parcelAdminDto->tracking_code,
             'sender_name'=> $parcelAdminDto->sender_name,
             'sender_address'=> $parcelAdminDto->sender_address,
@@ -52,10 +52,8 @@ class ParcelAdminService
             'recipient_address'=> $parcelAdminDto->recipient_address,
             'updated_at' => now(),
             'updated_by' => Auth::user()->id,
-        ];
-
+        ]);
         
-        return $updateData->save();
     }
 
     public function delete(Parcel $parcel)
