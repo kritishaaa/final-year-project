@@ -16,7 +16,7 @@ class ParcelAdminDto
         public ?float $weight = null,
         public ?float $distance = null,
         public ?float $price = null,
-        public string $status = 'pending',
+        public ?string $status = 'pending',
         public ?string $recipient_name = null,
         public ?string $recipient_contact = null,
         public ?string $recipient_address = null,
@@ -26,7 +26,7 @@ class ParcelAdminDto
     /**
      * Create a DTO from a Parcel model (Livewire or otherwise)
      */
-    public static function fromModel(Parcel $parcel): self
+    public static function fromLiveWireModel(Parcel $parcel): self
     {
         return new self(
             tracking_code: $parcel->tracking_code,
@@ -38,7 +38,7 @@ class ParcelAdminDto
             weight: $parcel->weight,
             distance: $parcel->distance,
             price: $parcel->price,
-            status: $parcel->status,
+            status: $parcel->status ?? 'pending',
             recipient_name: $parcel->recipient_name,
             recipient_contact: $parcel->recipient_contact,
             recipient_address: $parcel->recipient_address,

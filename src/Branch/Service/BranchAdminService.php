@@ -8,7 +8,7 @@ use Src\Branch\Models\Branch;
 
 class BranchAdminService
 {
-    public function store(BranchAdminDto $branchAdminDto): array | User
+    public function store(BranchAdminDto $branchAdminDto): array | Branch
     {
         $branch = Branch::create([
             'name' => $branchAdminDto->name,

@@ -35,7 +35,7 @@ class ParcelForm extends Component
             'parcel.weight' => ['required', 'numeric'],
             'parcel.distance' => ['nullable', 'numeric'],
             'parcel.price' => ['nullable', 'numeric'],
-            'parcel.status' => ['required', Rule::in(['pending','in_transit','delivered','cancelled'])],
+            'parcel.status' => ['nullable', Rule::in(['pending','in_transit','delivered','cancelled'])],
             'parcel.recipient_name' => ['required', 'string'],
             'parcel.recipient_contact' => ['required', 'string'],
             'parcel.recipient_address' => ['required', 'string'],
@@ -59,7 +59,7 @@ class ParcelForm extends Component
     {
         $this->validate();
 
-        $dto = new ParcelAdminDto();
+        $dto = ParcelAdminDto::fromLiveWireModel($this->parcel);
 
         $service = new ParcelAdminService();
         DB::beginTransaction();
