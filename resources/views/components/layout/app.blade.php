@@ -43,6 +43,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"
         integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- Tailwind CSS CDN -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        
+        <!-- Optional: Tailwind config -->
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#1d4ed8', // example
+                            secondary: '#9333ea',
+                        },
+                        fontFamily: {
+                            sans: ['Public Sans', 'ui-sans-serif', 'system-ui'],
+                        },
+                    },
+                },
+            }
+        </script>
+
     @livewireStyles
     <link rel="stylesheet"
         href="{{ asset('vendor/rappasoft/livewire-tables/css/laravel-livewire-tables.min.css') }}" />

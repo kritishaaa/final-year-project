@@ -64,6 +64,8 @@ class ParcelTable extends DataTableComponent
                 // if (can('users edit')) {
                     $edit = '<button class="btn btn-primary btn-sm" wire:click="edit(' . $row->id . ')" ><i class="bx bx-pencil"></i></button>&nbsp;';
                     $buttons .= $edit;
+                    $view = '<button class="btn btn-success btn-sm" wire:click="view(' . $row->id . ')" ><i class="bx bx-show"></i></button>&nbsp;';
+                    $buttons .= $view;
                 // }
 
                 // if (can('users delete')) {
@@ -85,6 +87,11 @@ class ParcelTable extends DataTableComponent
     {
         
         return redirect()->route('admin.parcels.edit', ['id' => $id]);
+    }
+    public function view($id)
+    {
+        
+        return redirect()->route('admin.parcels.view', ['id' => $id]);
     }
     public function delete($id)
     {

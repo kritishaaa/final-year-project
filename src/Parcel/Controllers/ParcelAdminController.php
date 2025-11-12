@@ -30,4 +30,10 @@ class ParcelAdminController extends Controller
        
         return view('Parcel::form')->with(compact('action', 'parcel') );
     }
+    function view(Request $request)
+    {
+        $parcel = Parcel::find($request->route('id'));
+       
+        return view('Parcel::show')->with(compact( 'parcel') );
+    }
 }
