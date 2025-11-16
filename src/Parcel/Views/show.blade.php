@@ -291,7 +291,6 @@
                                     <td>{{ $courier->courier->user?->name }}</td>
                                     <td>{{ $courier->created_at->format('d M, Y') }}</td>
                                     <td>{{ $courier->status }}</td>
-                                    @dd($courier)
                                     
                                 </tr>
                             @endforeach
