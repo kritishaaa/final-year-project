@@ -237,7 +237,7 @@
                         </div>
 
                         <div class="mb-3 pb-3 border-bottom">
-                            <small class="text-muted d-block mb-1">Created At</small>
+                            <small class="text-muted d-block mb-1">Created Date</small>
                             <p class="mb-0">
                                 <i class="bx bx-calendar me-2 text-primary"></i>
                                 {{ $parcel->created_at->format('M d, Y') }}
@@ -245,49 +245,67 @@
                                 <small class="text-muted ms-4">{{ $parcel->created_at->format('h:i A') }}</small>
                             </p>
                         </div>
-
-                        <div>
-                            <small class="text-muted d-block mb-1">Last Updated</small>
-                            <p class="mb-0">
-                                <i class="bx bx-time me-2 text-primary"></i>
-                                {{ $parcel->updated_at->diffForHumans() }}
-                            </p>
-                        </div>
                     </div>
                 </div>
 
                 {{-- Quick Actions Card --}}
-                <div class="card shadow-sm border-0 rounded-4">
-                    <div class="card-header bg-transparent border-0 pt-4 px-4">
-                        <h5 class="fw-semibold mb-0">
-                            <i class="bx bx-grid-alt me-2 text-primary"></i>Quick Actions
-                        </h5>
-                    </div>
-                    <div class="card-body px-4 pb-4">
-                        <div class="d-grid gap-2">
+               <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-transparent border-0 pt-4 px-4">
+        <h5 class="fw-semibold mb-0">
+            <i class="bx bx-grid-alt me-2 text-primary"></i>Quick Actions
+        </h5>
+    </div>
 
-                            <button class="btn btn-outline-primary ounded-3 text-start" data-bs-toggle="modal"
-                                data-bs-target="#assignCourierModal">
-                                <i class="bx bx-plus me-1"></i>{{ __('Assign Courier') }}
-                            </button>
+    <div class="card-body px-4 pb-4">
+        <div class="d-grid gap-2">
 
+            {{-- Assign Courier Button --}}
+            <button class="btn btn-outline-primary rounded-3 text-start" 
+                data-bs-toggle="modal"
+                data-bs-target="#assignCourierModal">
+                <i class="bx bx-plus me-1"></i>{{ __('Assign Courier') }}
+            </button>
 
-                            @if ($parcel->status !== 'cancelled')
-                                {{-- <form action="{{ route('admin.parcels.destroy', $parcel->id) }}" method="POST" 
-                              onsubmit="return confirm('Are you sure you want to delete this parcel?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger rounded-3 text-start w-100">
-                                <i class="bx bx-trash me-2"></i> Delete Parcel
-                            </button>
-                        </form> --}}
-                            @endif
-                        </div>
-                    </div>
+        </div>
 
+        {{-- Courier Table --}}
+        @if(isset($assignedCouriers) && count($assignedCouriers) > 0)
+            <div class="mt-4">
+                <h6 class="fw-bold mb-2">Assigned Couriers</h6>
 
+                <div class="table-responsive small">
+                    <table class="table table-sm table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Courier Name</th>
+                                <th>Assigned At</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
 
+                        <tbody>
+                            @foreach ($assignedCouriers as $index => $courier)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $courier->courier->user?->name }}</td>
+                                    <td>{{ $courier->created_at->format('d M, Y') }}</td>
+                                    <td>{{ $courier->status }}</td>
+                                    @dd($courier)
+                                    
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
+
+            </div>
+        @else
+            <p class="text-muted mt-3 small">No couriers assigned yet.</p>
+        @endif
+    </div>
+</div>
+
             </div>
         </div>
         <div class="modal fade" id="assignCourierModal" tabindex="-1" aria-labelledby="assignCourierModal"

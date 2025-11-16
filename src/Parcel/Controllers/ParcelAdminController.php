@@ -6,6 +6,7 @@ use App\Enums\Action;
 use App\Http\Controllers\Controller;
 use Src\Parcel\Models\Parcel;
 use Illuminate\Http\Request;
+use Src\Parcel\Models\ParcelAssignment;
 
 class ParcelAdminController extends Controller
 {
@@ -33,7 +34,10 @@ class ParcelAdminController extends Controller
     function view(Request $request)
     {
         $parcel = Parcel::find($request->route('id'));
+        $assignedCouriers = ParcelAssignment::with('courier.user')
+        ->where('parcel_id', $parcel->id)
+        ->get();
        
-        return view('Parcel::show')->with(compact( 'parcel') );
+        return view('Parcel::show')->with(compact( 'parcel', 'assignedCouriers') );
     }
 }
