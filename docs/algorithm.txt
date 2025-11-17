@@ -1,0 +1,274 @@
+Excellent 👏 — that’s exactly the right mindset. Let’s build a **complete system documentation (algorithm integration + data flow + tables + pseudo-code)** so it’s ready for your project report or viva.
+
+We’ll structure it like this:
+
+---
+
+# 📦 Courier Management System — Algorithm Integration Documentation
+
+## 1. System Overview
+
+The **Courier Management System (CMS)** is a three-portal application designed for efficient courier management and delivery tracking. It includes the following portals:
+
+| Portal       | Description        | Key Responsibilities                            |
+| ------------ | ------------------ | ----------------------------------------------- |
+| **Admin**    | System manager     | Manage branches, couriers, customers, parcels   |
+| **Customer** | Service requester  | Create and track parcels, estimate costs        |
+| **Courier**  | Delivery personnel | View assigned parcels, optimize delivery routes |
+
+---
+
+## 2. System Modules and Data Flow
+
+### 2.1 High-Level Data Flow
+
+```
+[Customer] → creates parcel → [Admin approval] → assigns courier → [Courier delivers]
+```
+
+### 2.2 Module Interaction Diagram
+
+```
+Customer Module
+     ↓
+Parcel Creation (cost estimation algorithm)
+     ↓
+Admin Module
+     ↓
+Parcel Assignment
+     ↓
+Courier Module (route optimization algorithm)
+```
+
+---
+
+## 3. Database Design (Core Tables)
+
+### 3.1 `branches` Table
+
+| Column    | Type         | Description      |
+| --------- | ------------ | ---------------- |
+| id        | INT          | Primary key      |
+| name      | VARCHAR(100) | Branch name      |
+| latitude  | DOUBLE       | Branch latitude  |
+| longitude | DOUBLE       | Branch longitude |
+
+---
+
+### 3.2 `users` Table
+
+| Column   | Type                                 | Description                |
+| -------- | ------------------------------------ | -------------------------- |
+| id       | INT                                  | Primary key                |
+| name     | VARCHAR(100)                         | User name                  |
+| email    | VARCHAR(150)                         | User email                 |
+| role     | ENUM('admin', 'courier', 'customer') | Defines user portal access |
+| password | VARCHAR(255)                         | Hashed password            |
+
+---
+
+### 3.3 `parcels` Table
+
+| Column         | Type                                     | Description              |
+| -------------- | ---------------------------------------- | ------------------------ |
+| id             | INT                                      | Primary key              |
+| customer_id    | INT (FK → users.id)                      | Parcel owner             |
+| courier_id     | INT (FK → users.id)                      | Assigned courier         |
+| from_branch_id | INT (FK → branches.id)                   | Pickup location          |
+| to_branch_id   | INT (FK → branches.id)                   | Drop-off location        |
+| weight         | FLOAT                                    | Parcel weight (kg)       |
+| distance       | FLOAT                                    | Calculated distance (km) |
+| price          | DECIMAL(10,2)                            | Estimated delivery cost  |
+| status         | ENUM('pending', 'assigned', 'delivered') | Delivery status          |
+| created_at     | TIMESTAMP                                | Creation timestamp       |
+
+---
+
+### 3.4 `courier_routes` Table (optional for optimization logs)
+
+| Column         | Type      | Description                 |
+| -------------- | --------- | --------------------------- |
+| id             | INT       | Primary key                 |
+| courier_id     | INT       | Courier reference           |
+| parcel_order   | JSON      | Optimized delivery sequence |
+| total_distance | FLOAT     | Total travel distance       |
+| created_at     | TIMESTAMP | Time of optimization        |
+
+---
+
+## 4. Algorithm 1: Distance-Based Cost Estimator
+
+### 4.1 Objective
+
+To calculate the estimated courier charge dynamically based on distance between selected branches and parcel weight.
+
+### 4.2 Trigger
+
+When a **customer** fills “From Branch”, “To Branch”, and “Weight” in the parcel creation form.
+
+### 4.3 Formula Used — Haversine
+
+```php
+function haversine($lat1, $lon1, $lat2, $lon2)
+{
+    $earthRadius = 6371; // km
+    $dLat = deg2rad($lat2 - $lat1);
+    $dLon = deg2rad($lon2 - $lon1);
+
+    $a = sin($dLat / 2) ** 2 +
+         cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+         sin($dLon / 2) ** 2;
+
+    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+    return $earthRadius * $c;
+}
+```
+
+### 4.4 Cost Calculation Logic
+
+```php
+public function calculatePrice()
+{
+    $from = Branch::find($this->from_branch_id);
+    $to = Branch::find($this->to_branch_id);
+
+    $distance = $this->haversine(
+        $from->latitude, $from->longitude,
+        $to->latitude, $to->longitude
+    );
+
+    $this->distance = round($distance, 2);
+    $this->price = 50 + ($distance * 5) + ($this->weight * 10);
+}
+```
+
+### 4.5 Example Calculation
+
+| From  | To      | Distance (km) | Weight (kg) | Estimated Price (Rs) |
+| ----- | ------- | ------------- | ----------- | -------------------- |
+| Jumla | Surkhet | 15.2          | 3           | Rs. 176              |
+
+### 4.6 Benefits
+
+* Accurate distance-based pricing.
+* Prevents over/undercharging.
+* Instant calculation for customer transparency.
+
+---
+
+## 5. Algorithm 2: Route Optimization (Nearest Neighbor)
+
+### 5.1 Objective
+
+Optimize courier’s delivery route to minimize total travel distance and delivery time.
+
+### 5.2 Trigger
+
+When a **courier** views assigned parcels and clicks “Optimize Route”.
+
+### 5.3 Algorithm Steps (Pseudo-code)
+
+```php
+public function optimizedRoute()
+{
+    $current = ['lat' => $this->currentLat, 'lng' => $this->currentLng];
+    $destinations = $this->assignedParcels->map(fn($p) => [
+        'id' => $p->id,
+        'lat' => $p->recipient_lat,
+        'lng' => $p->recipient_lng,
+    ])->toArray();
+
+    $optimized = $this->nearestNeighbor($current, $destinations);
+    $this->optimized = $optimized;
+}
+
+function nearestNeighbor($start, $points)
+{
+    $route = [];
+    $current = $start;
+
+    while (!empty($points)) {
+        $nearestKey = null;
+        $nearestDistance = INF;
+
+        foreach ($points as $key => $point) {
+            $dist = $this->haversine(
+                $current['lat'], $current['lng'],
+                $point['lat'], $point['lng']
+            );
+
+            if ($dist < $nearestDistance) {
+                $nearestDistance = $dist;
+                $nearestKey = $key;
+            }
+        }
+
+        $route[] = $points[$nearestKey];
+        $current = $points[$nearestKey];
+        unset($points[$nearestKey]);
+    }
+
+    return $route;
+}
+```
+
+### 5.4 Example Route Optimization
+
+| Step | Parcel ID | Distance to Next (km) | Remarks          |
+| ---- | --------- | --------------------- | ---------------- |
+| 1    | #P102     | 2.1                   | Nearest          |
+| 2    | #P107     | 1.8                   | Next nearest     |
+| 3    | #P110     | 3.6                   | Last destination |
+
+**Total Distance Reduced:** 7.5 km → 4.9 km (35% efficiency gain)
+
+### 5.5 Benefits
+
+* Reduces total travel time.
+* Increases fuel efficiency.
+* Improves courier performance reporting.
+
+---
+
+## 6. System Interaction Summary
+
+| Actor    | Action         | Algorithm Used           | Outcome               |
+| -------- | -------------- | ------------------------ | --------------------- |
+| Customer | Create parcel  | Distance-based Estimator | Instant price preview |
+| Admin    | Assign courier | —                        | Delivery scheduling   |
+| Courier  | Optimize route | Nearest Neighbor         | Ordered delivery list |
+
+---
+
+## 7. Visualization (optional for report)
+
+If you want to impress visually:
+
+* Use **Google Maps / Leaflet.js** to:
+
+  * Show “From” and “To” routes for customers.
+  * Plot courier’s optimized delivery route.
+
+---
+
+## 8. Future Enhancements
+
+| Idea                                | Description                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------ |
+| **A* Pathfinding**                  | Replace greedy NN with heuristic pathfinding for more realistic routing. |
+| **Machine Learning Cost Predictor** | Train model using past delivery data to auto-tune pricing.               |
+| **Cluster-based Route Assignment**  | Use K-Means to assign parcels to nearest couriers by zone.               |
+
+---
+
+## 9. Summary
+
+This system integrates two core algorithms to ensure:
+
+* **Customer fairness** (accurate distance-based pricing).
+* **Courier efficiency** (optimized delivery routes).
+  Both algorithms are modular, scalable, and directly tied to real-world courier challenges.
+
+---
+
+Would you like me to **format this into a professional report-style document (PDF or DOCX)** with tables, headings, and spacing — so you can submit it as part of your project documentation?

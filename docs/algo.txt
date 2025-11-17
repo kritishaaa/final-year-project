@@ -1,0 +1,42 @@
+Step 3: Algorithms Integration Plan
+
+Here’s how to plug your two algorithms into the modular system:
+
+🧮 Algorithm 1: Distance-based Cost Estimator (Customer Module)
+
+Where:
+When customer fills “from branch” and “to branch” in the create parcel form.
+
+How:
+Livewire component → triggers calculatePrice() method → uses Haversine formula → returns estimated cost dynamically.
+
+public function calculatePrice()
+{
+    $from = Branch::find($this->from_branch_id);
+    $to = Branch::find($this->to_branch_id);
+    $distance = $this->haversine($from->latitude, $from->longitude, $to->latitude, $to->longitude);
+
+    $this->price = 50 + ($distance * 5) + ($this->weight * 10);
+}
+
+🚚 Algorithm 2: Route Optimization (Courier Module)
+
+Where:
+When courier logs in and views assigned parcels → order them by nearest distance to reduce travel time.
+
+How:
+In the courier dashboard Livewire component:
+
+public function optimizedRoute()
+{
+    $current = ['lat' => $this->currentLat, 'lng' => $this->currentLng];
+    $destinations = $this->assignedParcels->map(fn($p) => [
+        'lat' => $p->recipient_lat,
+        'lng' => $p->recipient_lng,
+    ])->toArray();
+
+    $this->optimized = $this->nearestNeighbor($current, $destinations);
+}
+
+
+This gives the courier a list of parcels in optimized order.

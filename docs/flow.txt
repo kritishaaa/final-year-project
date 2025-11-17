@@ -1,0 +1,204 @@
+Perfect — now let’s go **step by step** and explain the **flow of your system** based on your migrations. I’ll show how the tables connect, what data flows where, and how it aligns with your portals and algorithms.
+
+---
+
+# 📦 Courier Management System — Flow Explanation
+
+## 1️⃣ `branches` Table
+
+**Purpose:**
+Stores branch information with coordinates.
+
+**Fields of interest:**
+
+* `latitude`, `longitude` → used for **distance calculation** (Haversine formula for pricing).
+
+**Flow:**
+
+1. Customer selects `from_branch_id` and `to_branch_id` while creating a parcel.
+2. System fetches branch coordinates → calculates distance → estimates price.
+
+**Connected Tables:**
+
+* `parcels` → `from_branch_id`, `to_branch_id`
+* `couriers` → `branch_id` (assigned branch)
+
+---
+
+## 2️⃣ `parcels` Table
+
+**Purpose:**
+Stores all parcel-related information (sender, recipient, weight, distance, price, status).
+
+**Fields of interest:**
+
+* `distance`, `price` → **calculated by Algorithm 1 (Cost Estimator)**
+* `status` → tracks parcel state: `pending`, `in_transit`, `delivered`, `cancelled`.
+
+**Flow:**
+
+1. Customer creates parcel → fills sender and recipient info + selects branches.
+2. System calculates **distance** and **price**.
+3. Admin can assign a courier.
+
+**Connected Tables:**
+
+* `branches` → pickup and delivery branch IDs
+* `parcel_assignments` → links parcel to courier
+* `parcel_tracks` → tracks parcel status changes
+* `parcel_payments` → stores payment info
+
+---
+
+## 3️⃣ `parcel_tracks` Table
+
+**Purpose:**
+Tracks parcel status updates over time.
+
+**Fields:**
+
+* `parcel_id` → links to `parcels`
+* `status` → integer representing current state
+* `date_created` → timestamp of update
+
+**Flow:**
+
+1. Whenever parcel status changes (assigned, picked, delivered), a new entry is created here.
+2. Helps **history tracking** for both customer and admin.
+
+**Connected Tables:**
+
+* `parcels` → one-to-many relationship (1 parcel → many track entries)
+
+---
+
+## 4️⃣ `locations` Table
+
+**Purpose:**
+Stores optional geo-locations (branches, depots, or delivery points).
+
+**Fields:**
+
+* `latitude` & `longitude` → can be used for mapping or **route optimization (Algorithm 2)**.
+
+**Flow:**
+
+* System may use this table to calculate courier routes or visualize delivery points.
+
+**Connected Tables:**
+
+* Could be linked to `parcels` or used internally in routing logic.
+
+---
+
+## 5️⃣ `couriers` Table
+
+**Purpose:**
+Stores courier details.
+
+**Fields:**
+
+* `user_id` → links to `users` table (role = courier)
+* `branch_id` → courier's base branch
+* `active` → whether courier is available
+
+**Flow:**
+
+1. Admin registers couriers.
+2. When assigning a parcel, the system selects **active couriers** from relevant branch.
+3. `courier_id` in `parcel_assignments` links parcels to courier.
+
+**Connected Tables:**
+
+* `parcel_assignments` → courier handles parcels
+* `users` → authentication
+
+---
+
+## 6️⃣ `parcel_assignments` Table
+
+**Purpose:**
+Manages **which courier is assigned to which parcel** and tracks delivery status.
+
+**Fields:**
+
+* `status` → tracks parcel progress:
+
+  * 0 = Pending
+  * 1 = Assigned
+  * 2 = Picked
+  * 3 = Delivered
+* `assigned_at`, `delivered_at` → timestamps for events
+
+**Flow:**
+
+1. Admin assigns parcel → `status = 1` (Assigned)
+2. Courier picks up parcel → `status = 2`
+3. Courier delivers parcel → `status = 3` → triggers `parcel_tracks` update
+
+**Connected Tables:**
+
+* `parcels` → parcel being delivered
+* `couriers` → assigned delivery person
+
+**Algorithm 2 connection:**
+
+* The courier dashboard can fetch all **assigned parcels** and calculate **optimized delivery route** using `parcel_assignments` + `parcels.recipient_address/coordinates`.
+
+---
+
+## 7️⃣ `parcel_payments` Table
+
+**Purpose:**
+Stores payment info for each parcel.
+
+**Fields:**
+
+* `payment_method` → cash, card, online
+* `amount` → total cost
+* `paid` → boolean
+
+**Flow:**
+
+1. Customer pays upon parcel creation or delivery.
+2. Payment is logged here.
+3. `price` from `parcels` is referenced to validate the payment amount.
+
+**Connected Tables:**
+
+* `parcels` → payment is linked to a specific parcel
+
+---
+
+# 🔗 Data Flow Summary
+
+### Customer Portal
+
+1. Select branches, enter parcel info → system calculates distance & price → stored in `parcels`.
+2. Payment (optional) → stored in `parcel_payments`.
+3. Parcel status tracked in `parcel_tracks`.
+
+### Admin Portal
+
+1. View parcels → assign courier → creates entry in `parcel_assignments`.
+2. Can view parcel route, payments, and tracking history.
+
+### Courier Portal
+
+1. View assigned parcels (`parcel_assignments`) → fetch recipient coordinates → run **Algorithm 2 (Route Optimization)**.
+2. Update delivery status → adds entry in `parcel_tracks`.
+
+---
+
+# 🧮 Algorithm Connections to Tables
+
+| Algorithm                             | Table(s)                                                 | Data Flow                                                                            |
+| ------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Distance-Based Cost Estimator         | `parcels`, `branches`                                    | Uses branch coordinates & parcel weight → updates `distance` & `price`               |
+| Route Optimization (Nearest Neighbor) | `parcels`, `couriers`, `parcel_assignments`, `locations` | Fetch assigned parcels & courier location → calculates optimal sequence for delivery |
+
+---
+
+If you want, I can **draw a visual flow diagram** showing **all these tables, their relationships, and how data flows from customer → admin → courier** — it will make your documentation extremely clear.
+
+Do you want me to do that next?

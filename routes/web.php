@@ -16,9 +16,19 @@ Route::get('auth/login', [AuthController::class, 'login'])->name('login');
 Route::post('auth/login', [AuthController::class, 'authenticate'])->name('auth.authenticate');
 
 
+Route::prefix('courier')->name('courier.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view("customerDashboard");
+    })->name('dashboard');
+
+    Route::get('/change-password',[AuthController::class,'changePassword'])->name('change-password');
+    Route::any('/logout', [AuthController::class, 'customerLogout'])->name('logout');
+});
+
 // Route::prefix('admin')
 //     ->as('admin.')
 //     ->group(function () {
-        Route::get('dashboard', DashboardController::class)->name('admin.dashboard');
+        Route::get('admin/dashboard', DashboardController::class)->name('admin.dashboard');
+        // Route::get('customer/dashboard', FrontendDashboardController::class)->name('customer.dashboard');
         Route::any('logout', [AuthController::class, 'logout'])->name('admin.logout');
     // });

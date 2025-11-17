@@ -9,8 +9,6 @@ class DashboardController extends Controller
    
     public function __invoke()
     {
-        
-        // dd('etaa samma ta ayo hai ');
 
         return view('admin.dashboard');
     }

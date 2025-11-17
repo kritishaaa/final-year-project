@@ -1,0 +1,206 @@
+Excellent — now that we know your **database tables (migrations)**, let’s list **exactly which CRUDs the Admin Portal** should have — i.e., what data the admin can create, read, update, and delete (or manage) across each module.
+
+I’ll focus only on the **Admin side** (not customer or courier) — so these are the features your admin panel should implement 👇
+
+---
+
+# ⚙️ ADMIN-SIDE CRUD MODULES (Based on Your Tables)
+
+---
+
+## 🏢 1️⃣ **Branch Management (branches table)**
+
+### **Purpose:**
+
+Manage courier branches and their locations.
+
+| CRUD       | Description                                                   |
+| ---------- | ------------------------------------------------------------- |
+| **Create** | Add new branch (name, address, latitude, longitude, contact). |
+| **Read**   | View list/map of all branches, search by name or city.        |
+| **Update** | Edit branch info (address, contact, coordinates).             |
+| **Delete** | Delete branch (only if no couriers or parcels assigned).      |
+
+✅ **Extra Admin Actions:**
+
+* View couriers working in each branch.
+* View total parcels handled per branch.
+
+---
+
+## 🚚 2️⃣ **Courier Management (couriers + users)**
+
+### **Purpose:**
+
+Manage courier employees who deliver parcels.
+
+| CRUD       | Description                                                             |
+| ---------- | ----------------------------------------------------------------------- |
+| **Create** | Add a new courier (linked to `user_id`, assign branch, vehicle number). |
+| **Read**   | List couriers with filters (active/inactive, branch).                   |
+| **Update** | Edit courier info, toggle availability (`active = true/false`).         |
+| **Delete** | Remove courier (if not currently assigned to parcels).                  |
+
+✅ **Extra Admin Actions:**
+
+* View courier’s performance (deliveries done, ratings, etc.).
+* View courier’s current route or assigned parcels.
+
+---
+
+## 📦 3️⃣ **Parcel Management (parcels)**
+
+### **Purpose:**
+
+Handle all customer parcels from creation to delivery.
+
+| CRUD       | Description                                                                         |
+| ---------- | ----------------------------------------------------------------------------------- |
+| **Create** | Admin can manually create a parcel (enter sender/recipient info, select branches).  |
+| **Read**   | View all parcels, filter by status (pending/in-transit/delivered), branch, or date. |
+| **Update** | Edit parcel details (price, weight, branch, or recipient info).                     |
+| **Delete** | Cancel or remove a parcel (only if not assigned/delivered).                         |
+
+✅ **Extra Admin Actions:**
+
+* Assign courier (creates record in `parcel_assignments`).
+* Change status manually (if system allows override).
+* View full parcel tracking history (`parcel_tracks`).
+
+---
+
+## 👤 4️⃣ **Parcel Assignment Management (parcel_assignments)**
+
+### **Purpose:**
+
+Assign parcels to couriers and manage delivery progress.
+
+| CRUD       | Description                                           |
+| ---------- | ----------------------------------------------------- |
+| **Create** | Assign parcel to a courier (status = Assigned).       |
+| **Read**   | View all assignments (by courier, branch, or status). |
+| **Update** | Update delivery progress (Picked, Delivered).         |
+| **Delete** | Remove courier assignment (reset parcel to Pending).  |
+
+✅ **Extra Admin Actions:**
+
+* Auto-create new `parcel_tracks` entry whenever status changes.
+* Monitor real-time courier status (if GPS integrated).
+* View delivery timeline per courier.
+
+---
+
+## 📍 5️⃣ **Parcel Tracking Management (parcel_tracks)**
+
+### **Purpose:**
+
+View parcel tracking history and delivery progress.
+
+| CRUD       | Description                                        |
+| ---------- | -------------------------------------------------- |
+| **Create** | Auto-created when courier or admin updates status. |
+| **Read**   | View timeline/history for each parcel.             |
+| **Update** | (Optional) Edit or correct incorrect entries.      |
+| **Delete** | (Optional) Remove old/unnecessary logs.            |
+
+✅ **Extra Admin Actions:**
+
+* Filter by parcel, courier, date, or status.
+* Display tracking history in timeline format.
+
+---
+
+## 💳 6️⃣ **Payment Management (parcel_payments)**
+
+### **Purpose:**
+
+Manage parcel payments (amount, method, paid status).
+
+| CRUD       | Description                                            |
+| ---------- | ------------------------------------------------------ |
+| **Create** | Record manual payment (cash or offline).               |
+| **Read**   | View payment history by parcel, date, or customer.     |
+| **Update** | Mark as paid/unpaid, change payment method, or refund. |
+| **Delete** | Remove incorrect or duplicate payment entries.         |
+
+✅ **Extra Admin Actions:**
+
+* Generate payment reports by branch/date.
+* Verify payment total equals `parcels.price`.
+
+---
+
+## 🗺️ 7️⃣ **Location Management (locations)** *(optional)*
+
+### **Purpose:**
+
+Manage coordinates for route optimization or map visualization.
+
+| CRUD       | Description                                |
+| ---------- | ------------------------------------------ |
+| **Create** | Add location (latitude, longitude, label). |
+| **Read**   | View on map; list all route points.        |
+| **Update** | Update coordinates.                        |
+| **Delete** | Remove unused points.                      |
+
+✅ **Extra Admin Actions:**
+
+* Use to test or visualize Algorithm 2 (route optimization).
+
+---
+
+## 👥 8️⃣ **User Management (users)**
+
+### **Purpose:**
+
+Manage system users (Admins, Couriers, Customers).
+
+| CRUD       | Description                                     |
+| ---------- | ----------------------------------------------- |
+| **Create** | Add new admin or customer user.                 |
+| **Read**   | List users, search by role or status.           |
+| **Update** | Edit user details, reset password, change role. |
+| **Delete** | Delete user (if no linked parcels or couriers). |
+
+✅ **Extra Admin Actions:**
+
+* Role assignment (admin, courier, customer).
+* Activate/deactivate accounts.
+
+---
+
+# ✅ Summary — Admin CRUD Checklist
+
+| Module             | Create | Read |   Update   |   Delete   | Special Admin Actions         |
+| ------------------ | :----: | :--: | :--------: | :--------: | ----------------------------- |
+| Branches           |    ✅   |   ✅  |      ✅     |      ✅     | View branch performance       |
+| Couriers           |    ✅   |   ✅  |      ✅     |      ✅     | Toggle availability           |
+| Parcels            |    ✅   |   ✅  |      ✅     |      ✅     | Assign courier, view tracking |
+| Parcel Assignments |    ✅   |   ✅  |      ✅     |      ✅     | Auto track update             |
+| Parcel Tracks      | (auto) |   ✅  | (optional) | (optional) | Status timeline               |
+| Parcel Payments    |    ✅   |   ✅  |      ✅     |      ✅     | Reports, verify totals        |
+| Locations          |    ✅   |   ✅  |      ✅     |      ✅     | Routing visualization         |
+| Users              |    ✅   |   ✅  |      ✅     |      ✅     | Manage roles                  |
+
+---
+
+# 🧠 Optional “Smart” Features for Admin
+
+| Feature                          | Description                                         |
+| -------------------------------- | --------------------------------------------------- |
+| **Dashboard Analytics**          | Total parcels, income, pending deliveries, etc.     |
+| **Courier Performance Tracking** | Completed deliveries, delays, earnings per courier. |
+| **Branch-wise Reports**          | Income and parcel count per branch.                 |
+| **Automated Assignment**         | Suggest couriers based on proximity or workload.    |
+| **Route Visualization**          | Show real-time delivery map using coordinates.      |
+
+---
+
+If you want, I can now show you a **list of Laravel Controllers and Routes** you’ll typically create for these admin CRUDs — for example:
+
+* `BranchController`
+* `ParcelController`
+* `CourierController`
+* `AssignmentController`
+
+Would you like me to list those next (with functions like `index`, `store`, `update`, `destroy` for each)?
