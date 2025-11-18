@@ -6,33 +6,63 @@
     <meta charset="utf-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $header ?? '' }} - {{ config('app.name') }}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <link href="{{ asset('vendor/nepali.datepicker.v4.0.8.min.css') }}" rel="stylesheet" type="text/css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}"
-        class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}" />
+    <link rel="stylesheet" href="{{ asset('custom.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
+    <link rel="stylesheet" href="{{ asset('home/tableStyle.css') }}" />
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@100..900&display=swap"
+        rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200;300;400;500;600;700;800&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
     </style>
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"
         integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="{{ asset('vendor/nepali.datepicker.v4.0.8.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Optional: Tailwind config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1d4ed8', // example
+                        secondary: '#9333ea',
+                    },
+                    fontFamily: {
+                        sans: ['Public Sans', 'ui-sans-serif', 'system-ui'],
+                    },
+                },
+            },
+        }
+    </script>
+
     @livewireStyles
     <link rel="stylesheet"
         href="{{ asset('vendor/rappasoft/livewire-tables/css/laravel-livewire-tables.min.css') }}" />
@@ -43,24 +73,21 @@
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
-            <!-- Menu -->
-
             <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
                 <div class="app-brand demo" style="height: 130px">
                     <a href="{{ route('courier.dashboard') }}"
                         class="app-brand-link d-flex flex-column align-items-center">
-                        <div class="d-flex align-items-center">
-                            <img src="{{ asset('assets/img/avatars/Emblem_of_Nepal.svg.png') }}" alt="Logo"
-                                class="app-brand-logo" style="height: 40px; width: auto;">
-                            <span class="app-brand-text demo menu-text fw-bolder ms-4">ई-पालिका</span>
-                        </div>
+
+
                         <div style="border-top: 1px solid #ccc; width: 100%; margin: 10px 0;"></div>
                         <div class="app-brand-text demo menu-text fw-bolder"
-                            style="font-size: 20px; margin-top: 15px; text-align: center;">
-
+                            style="font-size: 20px; margin-top: 15px; text-align: center; text-transform: uppercase;">
+                            Courier Management System
                         </div>
                         <div style="border-top: 1px solid #ccc; width: 100%; margin: 10px 0;"></div>
                     </a>
+
+
                 </div>
 
                 <div class="menu-inner-shadow"></div>
@@ -83,7 +110,6 @@
                 <!-- Content wrapper -->
                 <div class="content-wrapper">
                     <!-- Content -->
-
                     <div class="container-xxl flex-grow-1 container-p-y">
                         @if (session()->has('alert'))
                             <div class="alert alert m-2 bg bg-{{ session()->get('alert')['type'] }} p-4 text-white rounded alert-dismissible"
@@ -110,9 +136,9 @@
                         @endif
                         {{ $slot }}
                     </div>
-
                     <!-- / Content -->
-                    @include('admin.partials.footer')
+                    {{-- @include('courier.partials.offcanvas-menu') --}}
+                    @include('courier.partials.footer')
 
                 </div>
                 <!-- Content wrapper -->
@@ -123,7 +149,13 @@
         <!-- Overlay -->
         <div class="layout-overlay layout-menu-toggle"></div>
     </div>
-
+    <!-- Floating Menu -->
+    {{-- <div class="buy-now">
+        <button class="btn btn-primary btn-buy-now rounded-pill btn-icon btn-xl" type="button"
+            data-bs-toggle="offcanvas" data-bs-target="#offCanvasMenu" aria-controls="offcanvasBackdrop">
+            <span class="tf-icons bx bx-grid-alt bx-42px" style="font-size: 2.25rem;"></span>
+        </button>
+    </div> --}}
 
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
@@ -131,18 +163,30 @@
     <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"
         integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ asset('vendor/livewire-alert/livewire-alert.js') }}"></script>
     <script src="{{ asset('vendor/nepali.datepicker.v4.0.8.min.js') }}" type="text/javascript"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        function initNepaliDatePicker() {
             document.querySelectorAll('.nepali-date').forEach(function(input) {
+                // Check if already initialized to avoid double initialization
+                if (input.classList.contains('ndp-initialized')) {
+                    return;
+                }
+
+                // Remove any previous initialization (defensive)
+                if (input.nepaliDatePicker) {
+                    try {
+                        input.nepaliDatePicker('destroy');
+                    } catch (e) {}
+                }
+
+                // Initialize the date picker
                 input.nepaliDatePicker({
                     language: "ne",
                     ndpYear: true,
@@ -154,12 +198,65 @@
                         }));
                     }
                 });
+
+                // Mark as initialized
+                input.classList.add('ndp-initialized');
+            });
+        }
+
+        // Initialize on DOM ready
+        document.addEventListener("DOMContentLoaded", function() {
+            initNepaliDatePicker();
+        });
+
+        // Initialize on Livewire load
+        document.addEventListener("livewire:load", function() {
+            // Initialize immediately
+            initNepaliDatePicker();
+
+            // Initialize after each Livewire update
+            Livewire.hook('message.processed', (message, component) => {
+                // Add a small delay to ensure DOM is updated
+                setTimeout(() => {
+                    initNepaliDatePicker();
+                }, 100);
+            });
+
+            // Initialize after DOM mutations (for conditional rendering)
+            Livewire.hook('element.updated', (el, component) => {
+                // Check if the updated element or its children contain nepali-date inputs
+                const nepaliInputs = el.querySelectorAll('.nepali-date');
+                if (nepaliInputs.length > 0) {
+                    setTimeout(() => {
+                        initNepaliDatePicker();
+                    }, 100);
+                }
             });
         });
+
+        // Additional event listeners for modal and tab changes
+        document.addEventListener('shown.bs.modal', function() {
+            setTimeout(() => {
+                initNepaliDatePicker();
+            }, 100);
+        });
+
+        document.addEventListener('shown.bs.tab', function() {
+            setTimeout(() => {
+                initNepaliDatePicker();
+            }, 100);
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.js"></script>
     @livewireScripts
     @stack('scripts')
-    <x-livewire-alert::flash />
+    <script src="{{ asset('vendor/livewire-alert/livewire-alert.js') }}"></script>
+    <div class="container">
+
+        {{-- <x-livewire-alert::flash /> --}}
+        {{-- {{ $slot }} --}}
+    </div>
+
 </body>
 
 </html>

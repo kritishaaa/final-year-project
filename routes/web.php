@@ -10,6 +10,9 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'customerLogin'])->name('customer.authenticate');
 // Route::get('/services', [FrontController::class, 'services'])->name('services');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
+Route::get('/', function () {
+    return view('welcome');
+});
 
 
 Route::get('auth/login', [AuthController::class, 'login'])->name('login');
@@ -29,6 +32,5 @@ Route::prefix('courier')->name('courier.')->group(function () {
 //     ->as('admin.')
 //     ->group(function () {
         Route::get('admin/dashboard', DashboardController::class)->name('admin.dashboard');
-        // Route::get('customer/dashboard', FrontendDashboardController::class)->name('customer.dashboard');
         Route::any('logout', [AuthController::class, 'logout'])->name('admin.logout');
     // });
