@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Src\Parcel\Models\Parcel;
 use Illuminate\Http\Request;
 use Src\Parcel\Models\ParcelAssignment;
+use Src\Parcel\Models\ParcelTrack;
 
 class ParcelAdminController extends Controller
 {
@@ -37,7 +38,12 @@ class ParcelAdminController extends Controller
         $assignedCouriers = ParcelAssignment::with('courier.user')
         ->where('parcel_id', $parcel->id)
         ->get();
+        $parcelTracks= ParcelTrack::where('parcel_id', $parcel->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        // dd($parcelTracks);
        
-        return view('Parcel::show')->with(compact( 'parcel', 'assignedCouriers') );
+        return view('Parcel::show')->with(compact( 'parcel', 'assignedCouriers', 'parcelTracks') );
     }
 }
