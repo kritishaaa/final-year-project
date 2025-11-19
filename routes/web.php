@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/user/register', [AuthController::class, 'showRegisterForm'])->name('showForm');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
-// Route::get('/login', [FrontController::class, 'login'])->name('digital-service');
 Route::post('/login', [AuthController::class, 'customerLogin'])->name('customer.authenticate');
-// Route::get('/services', [FrontController::class, 'services'])->name('services');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
 Route::get('/', function () {
     return view('welcome');
@@ -28,9 +26,5 @@ Route::prefix('courier')->name('courier.')->group(function () {
     Route::any('/logout', [AuthController::class, 'customerLogout'])->name('logout');
 });
 
-// Route::prefix('admin')
-//     ->as('admin.')
-//     ->group(function () {
-        Route::get('admin/dashboard', DashboardController::class)->name('admin.dashboard');
-        Route::any('logout', [AuthController::class, 'logout'])->name('admin.logout');
-    // });
+Route::get('admin/dashboard', DashboardController::class)->name('admin.dashboard');
+Route::any('logout', [AuthController::class, 'logout'])->name('admin.logout');

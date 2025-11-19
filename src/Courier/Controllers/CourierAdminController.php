@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Src\Courier\Models\Courier;
 
 class CourierAdminController extends Controller
 {
@@ -27,9 +28,9 @@ class CourierAdminController extends Controller
 
     function edit(Request $request)
     {
-        $user = User::find($request->route('id'));
+        $courier = Courier::find($request->route('id'));
         $action = Action::UPDATE;
        
-        return view('Courier::form')->with(compact('action'));
+        return view('Courier::form')->with(compact('action', 'courier'));
     }
 }

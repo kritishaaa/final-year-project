@@ -20,12 +20,24 @@ class AuthController extends Controller
   
 
     public function login()
-    {
-        if (\auth()->check()) {
+{
+    if (\auth()->check()) {
+        $user = auth()->user();
+
+        if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'courier') {
+            return redirect()->route('courier.dashboard');
+        } else {
+            // Optional: redirect other roles or logout
+            return redirect()->route('home');
         }
-        return view('admin.auth.login');
     }
+
+    return view('admin.auth.login');
+}
+
+
     public function showRegisterForm()
     {
         return view('admin.register'); 
@@ -39,21 +51,34 @@ class AuthController extends Controller
    
 
     public function authenticate(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-        if (Auth::guard('web')->attempt(['email' => $request->email, 'password' => $request->password])) {
-          
+{
+    $request->validate([
+        'email' => 'required|string|email',
+        'password' => 'required|string',
+    ]);
+
+    if (Auth::guard('web')->attempt(['email' => $request->email, 'password' => $request->password])) {
+        $user = Auth::guard('web')->user();
+
+        // Redirect based on role
+        if ($user->role === 'admin') {
             return redirect()->intended(route('admin.dashboard'));
+        } elseif ($user->role === 'courier') {
+            return redirect()->intended(route('courier.dashboard'));
         } else {
-            return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
+            // Optional: logout and show error for unknown roles
+            Auth::logout();
+            return redirect()->route('login')->withErrors(['email' => 'Unauthorized role.']);
         }
     }
 
+    return back()->withErrors(['email' => 'The provided credentials do not match our records.']);
+}
+
+
     public function logout(Request $request)
     {
+        
         return redirect()->route('login');
     }
 

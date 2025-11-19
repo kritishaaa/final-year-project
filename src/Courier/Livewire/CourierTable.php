@@ -33,12 +33,13 @@ class CourierTable extends DataTableComponent
     {
         return Courier::query()
            
-           
+            ->whereNull('deleted_at')
             ->orderBy('created_at', 'DESC');
     }
     public function filters(): array
     {
-        return [];
+        return [];        
+
     }
     public function columns(): array
     {
@@ -84,7 +85,7 @@ class CourierTable extends DataTableComponent
     public function edit($id)
     {
         
-        return redirect()->route('admin.branch.edit', ['id' => $id]);
+        return redirect()->route('admin.couriers.edit', ['id' => $id]);
     }
     public function delete($id)
     {
