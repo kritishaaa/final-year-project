@@ -18,10 +18,6 @@
     <!-- Navigation -->
     <nav>
         <div class="logo">COURIER</div>
-        <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#contact">Contact</a>
-        </div>
         <div class="nav-actions">
             <a href="{{ route('login') }}" class="login-btn">Login</a>
         </div>

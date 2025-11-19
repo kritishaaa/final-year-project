@@ -2,15 +2,18 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use Frontend\Courier\Home\Controller\HomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user/register', [AuthController::class, 'showRegisterForm'])->name('showForm');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'customerLogin'])->name('customer.authenticate');
 Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'home'])->name('home');
+// routes/web.php
+Route::get('/track/{code}', [HomeController::class, 'search'])
+    ->name('track.search');
+
 
 
 Route::get('auth/login', [AuthController::class, 'login'])->name('login');
