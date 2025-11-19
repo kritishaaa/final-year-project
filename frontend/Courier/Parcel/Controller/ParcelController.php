@@ -33,18 +33,15 @@ public function index(Request $request)
 
     public function assigned(Request $request)
     {
-        
         $userId = auth()->id();
         $courier = Courier::where('user_id', $userId)->firstOrFail();
 
         $assignments = ParcelAssignment::with('parcel')
             ->where('courier_id', $courier->id)
+            ->where('status', '!=', 'delivered') // Exclude delivered parcels
             ->get();
 
-
         return view('Courier.Parcel::assignments', compact('assignments'));
-        
-
     }
 
     

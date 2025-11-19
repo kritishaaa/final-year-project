@@ -6,13 +6,16 @@ use App\Traits\SessionFlash;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
+use Src\Courier\Models\Courier;
 use Src\Parcel\Models\ParcelAssignment;
 
 class AssignmentPage extends Component
 {
     use SessionFlash;
     public ?Collection $assignments = null;
-
+    public $optimizedAssignments = []; // will hold parcels in optimized order
+    public $totalDistance = 0;
+    public $totalPrice = 0;
 
     
     public function render(){
@@ -22,50 +25,6 @@ class AssignmentPage extends Component
     public function mount(Collection $assignments)
     {
         $this->assignments = $assignments;
-    }
-
-
-   public function assignMe($parcelId)
-    {
-        $parcel = $this->parcels->firstWhere('id', $parcelId);
-
-        if (!$parcel) {
-            $this->flashError('Parcel not found!');
-            return;
-        }
-
-        
-        if ($parcel->status === 'assigned') {
-            $this->errorFlash('This parcel is already assigned!');
-            return;
-        }
-
-       
-        ParcelAssignment::create([
-            'parcel_id' => $parcel->id,
-            'courier_id' => auth()->user()->id,
-            'status' => 'assigned',
-            'assigned_at' => Carbon::now(),
-        ]);
-
-        $parcel->status = 'assigned';
-        $parcel->save();
-
-        $this->successFlash('Parcel assigned to you successfully!');
-
-        $courierName = auth()->user()->name ?? 'Unknown';
-        \Src\Parcel\Models\ParcelTrack::create([
-                'parcel_id' => $parcel->id,
-                'status' => 'assigned',
-                'message' => "Your parcel has been assigned to courier {$courierName}.",
-               
-            ]);
-
-       
-        $this->parcels = $this->parcels->map(function ($p) use ($parcelId) {
-            if ($p->id == $parcelId) $p->status = 'in_transit';
-            return $p;
-        });
     }
 
 
@@ -113,6 +72,76 @@ class AssignmentPage extends Component
         return redirect()->route('courier.parcels.assign');
     }
 
+
+
+    public function optimizeRoute()
+    {
+        $courierId = auth()->user()->id;
+        $courier = Courier::where('user_id', $courierId)->with('branch')->first();
+
+        $branchLat = $courier->branch->latitude;
+        $branchLng = $courier->branch->longitude;
+
+        // Only assigned parcels for this courier
+        $parcels = $this->assignments->toArray();
+
+        $route = [];
+        $currentLat = $branchLat;
+        $currentLng = $branchLng;
+
+        $remaining = $parcels;
+        $totalDistance = 0;
+        $totalPrice = 0;
+
+        while (!empty($remaining)) {
+            $closestIndex = null;
+            $closestDistance = PHP_FLOAT_MAX;
+
+            foreach ($remaining as $index => $parcel) {
+                $dist = $this->haversine(
+                    $currentLat,
+                    $currentLng,
+                    $parcel['parcel']['destination_latitude'],
+                    $parcel['parcel']['destination_longitude']
+                );
+
+                if ($dist < $closestDistance) {
+                    $closestDistance = $dist;
+                    $closestIndex = $index;
+                }
+            }
+
+            $totalDistance += $closestDistance;
+            $totalPrice += $remaining[$closestIndex]['parcel']['price'];
+
+            $route[] = $remaining[$closestIndex];
+
+            $currentLat = $remaining[$closestIndex]['parcel']['destination_latitude'];
+            $currentLng = $remaining[$closestIndex]['parcel']['destination_longitude'];
+
+            unset($remaining[$closestIndex]);
+            $remaining = array_values($remaining);
+        }
+
+        $this->optimizedAssignments = $route;
+        $this->totalDistance = $totalDistance;
+        $this->totalPrice = $totalPrice;
+    }
+
+    // Haversine function
+    private function haversine($lat1, $lon1, $lat2, $lon2)
+    {
+        $earth = 6371; // km
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) ** 2 +
+            cos(deg2rad($lat1)) *
+            cos(deg2rad($lat2)) *
+            sin($dLon / 2) ** 2;
+
+        return 2 * $earth * asin(sqrt($a));
+    }
 
    
 
