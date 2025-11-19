@@ -59,4 +59,10 @@ class Parcel extends Model
     {
         return $this->belongsTo(Branch::class, 'to_branch_id');
     }
+
+    public function assignments()
+{
+    return $this->hasMany(ParcelAssignment::class, 'parcel_id');
+}
+
 }

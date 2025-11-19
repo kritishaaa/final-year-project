@@ -33,7 +33,7 @@ class ParcelAssignment extends Model
     protected $casts = [
           'assigned_at'  => 'datetime',
         'delivered_at' => 'datetime',
-        'status'       => 'integer',
+        'status'       => 'string',
     ];
 
     /**
@@ -52,26 +52,5 @@ class ParcelAssignment extends Model
         return $this->belongsTo(Courier::class, 'courier_id');
     }
 
-    /**
-     * Status helper methods (optional)
-     */
-    public function isPending()
-    {
-        return $this->status === 0;
-    }
-
-    public function isAssigned()
-    {
-        return $this->status === 1;
-    }
-
-    public function isPicked()
-    {
-        return $this->status === 2;
-    }
-
-    public function isDelivered()
-    {
-        return $this->status === 3;
-    }
+   
 }
