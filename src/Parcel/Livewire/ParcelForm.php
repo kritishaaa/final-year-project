@@ -22,6 +22,12 @@ class ParcelForm extends Component
     public array $branches = [];
     public int $currentStep = 1;
 
+    public $deliveryLatitude;
+    public $deliveryLongitude;
+
+    public $branchLat;
+    public $branchLng;
+
     public function rules(): array
     {
         return [
@@ -30,11 +36,13 @@ class ParcelForm extends Component
             'parcel.sender_address' => ['required', 'string'],
             'parcel.sender_contact' => ['required', 'string', 'max:20'],
             'parcel.from_branch_id' => ['required', 'exists:branches,id'],
-            'parcel.to_branch_id' => ['required', 'exists:branches,id'],
+            'parcel.destination_longitude' => ['required'],
+            'parcel.destination_latitude' => ['required'],
+
             'parcel.weight' => ['required', 'numeric', 'min:0.01'],
             'parcel.distance' => ['nullable', 'numeric'],
             'parcel.price' => ['nullable', 'numeric'],
-            'parcel.status' => ['nullable', Rule::in(['pending','in_transit','delivered','cancelled'])],
+            'parcel.status' => ['nullable', Rule::in(['pending', 'in_transit', 'delivered', 'cancelled'])],
             'parcel.recipient_name' => ['required', 'string'],
             'parcel.recipient_contact' => ['required', 'string'],
             'parcel.recipient_address' => ['required', 'string'],
@@ -46,21 +54,27 @@ class ParcelForm extends Component
     {
         $this->action = $action;
         $this->parcel = $parcel;
-        
-        
+
+
         // Set default status for new parcels
         if ($this->action === Action::CREATE && !$this->parcel->status) {
             $this->parcel->status = 'pending';
         }
-        
+
         $this->branches = Branch::select('id', 'name', 'latitude', 'longitude')->get()->toArray();
     }
 
     // --- Wizard Navigation ---
     public function nextStep()
     {
-        $this->validateCurrentStep();
-        
+        // $this->validateCurrentStep();
+        if ($this->currentStep + 1 == 4) {
+            if ($this->deliveryLatitude === null || $this->deliveryLongitude === null) {
+                $this->errorFlash('Please select location on the map');
+                return;
+            }
+        }
+
         if ($this->currentStep < 4) {
             $this->currentStep++;
         }
@@ -71,11 +85,25 @@ class ParcelForm extends Component
         if ($this->currentStep > 1) {
             $this->currentStep--;
         }
+        $this->initializeMap();
     }
+
+    public function initializeMap()
+    {
+
+        // if ($this->currentStep + 1 == 4) {
+        //     if ($this->deliveryLatitude === null || $this->deliveryLongitude === null) {
+        //         $this->errorFlash('Please select location on the map');
+        //         return;
+        //     }
+        // }
+    }
+
+
 
     private function validateCurrentStep()
     {
-        $validationRules = match($this->currentStep) {
+        $validationRules = match ($this->currentStep) {
             1 => [
                 'parcel.sender_name' => $this->rules()['parcel.sender_name'],
                 'parcel.sender_contact' => $this->rules()['parcel.sender_contact'],
@@ -100,98 +128,117 @@ class ParcelForm extends Component
         }
     }
 
-    public function updatedParcelFromBranchId() 
-    { 
-        $this->calculateDistanceAndPrice(); 
-    }
-    
-    public function updatedParcelToBranchId() 
-    { 
-        $this->calculateDistanceAndPrice(); 
-    }
-    
-    public function updatedParcelWeight() 
-    { 
-        $this->calculateDistanceAndPrice(); 
-    }
 
-    public function calculateDistanceAndPrice(): void
+
+
+    public function calculateDistance()
     {
-        if (!$this->parcel->from_branch_id || 
-            !$this->parcel->to_branch_id || 
-            !$this->parcel->weight) {
-            return;
-        }
-    
-        $from = Branch::find($this->parcel->from_branch_id);
-        $to = Branch::find($this->parcel->to_branch_id);
-    
-        if (!$from || !$to || !$from->latitude || !$to->latitude) {
-            $this->addError('parcel', 'Invalid branch data. Please ensure branches have valid coordinates.');
-            return;
-        }
-    
-        // --- Haversine formula ---
-        $earthRadius = 6371; // km
-        $lat1 = deg2rad($from->latitude);
-        $lon1 = deg2rad($from->longitude);
-        $lat2 = deg2rad($to->latitude);
-        $lon2 = deg2rad($to->longitude);
-    
-        $deltaLat = $lat2 - $lat1;
-        $deltaLon = $lon2 - $lon1;
-    
-        $a = sin($deltaLat / 2) ** 2 + cos($lat1) * cos($lat2) * sin($deltaLon / 2) ** 2;
-        $c = 2 * asin(sqrt($a));
-        $distance = $earthRadius * $c;
-    
-        $this->parcel->distance = round($distance, 2);
-    
-        // --- Price calculation ---
-        $baseRate = 50;      // Base rate in Rs
-        $perKm = 10;         // Rs per km
-        $perKg = 20;         // Rs per kg
-        $weight = $this->parcel->weight ?? 1;
-    
-        $this->parcel->price = round($baseRate + ($distance * $perKm) + ($weight * $perKg), 2);
-        
-        // Clear any previous errors
-        $this->resetErrorBag('parcel');
-    }
+        if ($this->deliveryLatitude && $this->deliveryLongitude ) {
 
-    public function save()
-    {
-        $this->validate();
-
-        if (!$this->parcel->distance || !$this->parcel->price) {
-            $this->calculateDistanceAndPrice();
+           $this->branchLat = $this->parcel->fromBranch->latitude;
+   
+           $this->branchLng = $this->parcel->fromBranch->longitude;
+           // Calculate distance
+           $this->parcel->distance = round($this->haversine(
+               $this->branchLat,
+               $this->branchLng,
+               $this->deliveryLatitude,
+               $this->deliveryLongitude
+            ), 2); // rounded to 2 decimals
             
-            if (!$this->parcel->distance || !$this->parcel->price) {
-                $this->addError('parcel', 'Unable to calculate distance and price. Please check branch information.');
+            // --- Price calculation ---
+            $baseRate = 50;      // Base rate in Rs
+            $perKm = 10;         // Rs per km
+            $perKg = 20;         // Rs per kg
+            $weight = $this->parcel->weight ?? 1; // default weight = 1 kg
+
+            $this->parcel->price = round(
+                $baseRate + ($this->parcel->distance * $perKm) + ($weight * $perKg),
+                2
+            );
+        }
+    }
+
+
+    private function haversine($lat1, $lon1, $lat2, $lon2)
+    {
+        $earth = 6371;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return round($earth * $c, 2);
+    }
+    
+    public function updated($field)
+    {
+        if (in_array($field, ['deliveryLatitude', 'deliveryLongitude'])) {
+            $this->calculateDistance();
+        }
+    }
+    public function fromBranchChanged()
+    {
+        $branchId = $this->parcel['from_branch_id'];
+
+
+        foreach ($this->branches as $branch) {
+            if ($branch['id'] == $branchId) {
+                $this->branchLat = $branch['latitude'];
+                $this->branchLng = $branch['longitude'];
                 return;
             }
         }
-
-        $dto = ParcelAdminDto::fromLiveWireModel($this->parcel);
-        $service = new ParcelAdminService();
-
-        DB::beginTransaction();
-        try {
-            match ($this->action) {
-                Action::CREATE => $service->store($dto),
-                Action::UPDATE => $service->update($this->parcel, $dto),
-            };
-            DB::commit();
-
-            $msg = $this->action === Action::CREATE ? 'Parcel Created Successfully' : 'Parcel Updated Successfully';
-            $this->successFlash(__($msg));
-            return redirect()->route('admin.parcels.index');
-        } catch (\Exception $e) {
-            logger($e);
-            DB::rollBack();
-            $this->addError('parcel', 'An error occurred: ' . $e->getMessage());
-        }
     }
+
+
+   public function save()
+{
+    $this->parcel->destination_latitude = $this->deliveryLatitude;
+    $this->parcel->destination_longitude = $this->deliveryLongitude;
+
+    $this->validate();
+    $dto = ParcelAdminDto::fromLiveWireModel($this->parcel);
+    $service = new ParcelAdminService();
+
+    DB::beginTransaction();
+    try {
+
+        match ($this->action) {
+            Action::CREATE => $parcel = $service->store($dto),
+            Action::UPDATE => $service->update($this->parcel, $dto),
+        };
+
+        // Insert tracking log when CREATED
+        if ($this->action === Action::CREATE) {
+
+            $start = $parcel->sender_address ?? 'Unknown';
+            $end = $parcel->recipient_address ?? 'Unknown';
+
+            \Src\Parcel\Models\ParcelTrack::create([
+                'parcel_id' => $parcel->id,
+                'status' => 'created',
+                'message' => "Your parcel has been created from {$start} to {$end}.",
+                'location' => $start,
+            ]);
+        }
+
+        DB::commit();
+
+        $msg = $this->action === Action::CREATE ? 'Parcel Created Successfully' : 'Parcel Updated Successfully';
+        $this->successFlash(__($msg));
+        return redirect()->route('admin.parcels.index');
+
+    } catch (\Exception $e) {
+        logger($e);
+        DB::rollBack();
+        $this->addError('parcel', 'An error occurred: ' . $e->getMessage());
+    }
+}
 
     public function render()
     {

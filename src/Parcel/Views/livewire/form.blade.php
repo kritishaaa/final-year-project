@@ -1,5 +1,10 @@
 <div>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <form wire:submit.prevent="save" class="p-4">
+
         <div class="card shadow-lg border-0 rounded-4">
             {{-- Header with Progress --}}
             <div class="card-header bg-gradient-primary text-white rounded-top-4 p-4">
@@ -80,6 +85,7 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
+
                         </div>
                     </div>
                 @endif
@@ -157,70 +163,6 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">From Branch <span
-                                        class="text-danger">*</span></label>
-                                <select wire:model="parcel.from_branch_id"
-                                    class="form-select form-select-lg rounded-3 @error('parcel.from_branch_id') is-invalid @enderror">
-                                    <option value="">Select Origin Branch</option>
-                                    @foreach ($branches as $branch)
-                                        <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
-                                    @endforeach
-                                </select>
-                                @error('parcel.from_branch_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">To Branch <span
-                                        class="text-danger">*</span></label>
-                                <select wire:model="parcel.to_branch_id"
-                                    class="form-select form-select-lg rounded-3 @error('parcel.to_branch_id') is-invalid @enderror">
-                                    <option value="">Select Destination Branch</option>
-                                    @foreach ($branches as $branch)
-                                        <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
-                                    @endforeach
-                                </select>
-                                @error('parcel.to_branch_id')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
-
-                            {{-- Auto Calculated Fields
-<div class="col-12 mt-3">
-    <div wire:loading.flex class="alert alert-info rounded-3 align-items-center" role="alert">
-        <i class="bx bx-loader-alt bx-spin me-2 fs-4"></i>
-        <div>Calculating distance and price...</div>
-    </div>
-</div>
-
-@if ($parcel->distance && $parcel->price)
-    <div class="col-12 mt-4">
-        <div class="alert alert-success rounded-3 d-flex align-items-center" role="alert">
-            <i class="bx bx-check-circle fs-3 me-3"></i>
-            <div class="flex-grow-1">
-                <h6 class="mb-2 fw-semibold">Calculation Complete!</h6>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <small class="text-muted d-block">Distance</small>
-                        <strong class="fs-5">{{ number_format($parcel->distance, 2) }} km</strong>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block">Estimated Price</small>
-                        <strong class="fs-5 text-success">Rs. {{ number_format($parcel->price, 2) }}</strong>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block">Weight</small>
-                        <strong class="fs-5">{{ number_format($parcel->weight, 2) }} kg</strong>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-@endif --}}
-
-
-                            <div class="col-md-6">
                                 <label class="form-label fw-semibold">Status</label>
                                 <select wire:model="parcel.status"
                                     class="form-select form-select-lg rounded-3 @error('parcel.status') is-invalid @enderror">
@@ -234,6 +176,21 @@
                                 @enderror
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">From Branch <span
+                                        class="text-danger">*</span></label>
+                                <select wire:model="parcel.from_branch_id"
+                                    class="form-select form-select-lg rounded-3 @error('parcel.from_branch_id') is-invalid @enderror" wire:change="fromBranchChanged">
+                                    <option value="">Select Origin Branch</option>
+                                    @foreach ($branches as $branch)
+                                        <option value="{{ $branch['id'] }}">{{ $branch['name'] }}</option>
+                                    @endforeach
+                                </select>
+                                @error('parcel.from_branch_id')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Additional Remarks</label>
                                 <textarea wire:model="parcel.remarks" rows="3"
@@ -243,6 +200,7 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
+
                         </div>
                     </div>
                 @endif
@@ -375,6 +333,9 @@
                 </div>
             </div>
         </div>
+
+        <div id="map" wire:ignore style="height: 400px; width: 100%;"></div>
+
     </form>
 
     <style>
@@ -413,4 +374,95 @@
             animation: fadeIn 0.4s ease-in-out;
         }
     </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let defaultLat = 27.700769; // your office lat
+            let defaultLng = 85.300140; // your office lng
+
+            // Initialize map
+            let map = L.map('map').setView([defaultLat, defaultLng], 13);
+
+            // Add map tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+
+            let marker;
+
+            // If editing and coordinates exist, show marker
+            @if ($deliveryLatitude && $deliveryLongitude)
+                marker = L.marker([{{ $deliveryLatitude }}, {{ $deliveryLongitude }}]).addTo(map);
+                map.setView([{{ $deliveryLatitude }}, {{ $deliveryLongitude }}], 13);
+            @endif
+
+            // Click to select new location
+            map.on('click', function(e) {
+                let lat = e.latlng.lat;
+                let lng = e.latlng.lng;
+
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+
+                marker = L.marker([lat, lng]).addTo(map);
+
+                @this.set('deliveryLatitude', lat);
+                @this.set('deliveryLongitude', lng);
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('livewire:load', function() {
+            const defaultLat = 27.700769;
+            const defaultLng = 85.300140;
+
+            let mapInstance = null;
+            let marker = null;
+
+            const initializeMap = () => {
+                const mapElement = document.getElementById('map');
+
+                if (!mapElement) {
+                    return;
+                }
+
+                if (!mapInstance) {
+                    mapInstance = L.map(mapElement).setView([defaultLat, defaultLng], 13);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                    }).addTo(mapInstance);
+
+                    mapInstance.on('click', function(e) {
+                        const lat = e.latlng.lat;
+                        const lng = e.latlng.lng;
+
+                        if (marker) {
+                            mapInstance.removeLayer(marker);
+                        }
+
+                        marker = L.marker([lat, lng]).addTo(mapInstance);
+
+                        @this.set('latitude', lat);
+                        @this.set('longitude', lng);
+                    });
+                }
+
+                // Ensure Leaflet recalculates size when the step becomes visible
+                setTimeout(() => {
+                    mapInstance.invalidateSize();
+                }, 50);
+            };
+
+            initializeMap();
+
+            // Re-run map initialization every time Livewire finishes a DOM update
+            Livewire.hook('message.processed', () => {
+                initializeMap();
+            });
+        });
+    </script>
+
 </div>

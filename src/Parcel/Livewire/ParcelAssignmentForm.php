@@ -49,11 +49,21 @@ class ParcelAssignmentForm extends Component
             'assigned_at' => Carbon::now(),
         ]);
 
-        $this->parcel->status = 'in_transit';
+        $this->parcel->status = 'assigned';
         $dto = ParcelAdminDto::fromLiveWireModel($this->parcel);
         $service = new ParcelAdminService();
         $service->update( $this->parcel, $dto);  
         
+
+
+        $courierName = Courier::find($this->selectedCourierId)->user->name ?? 'Unknown';
+
+        \Src\Parcel\Models\ParcelTrack::create([
+                'parcel_id' => $this->parcel->id,
+                'status' => 'assigned',
+                'message' => "Your parcel has been assigned to courier {$courierName}.",
+               
+            ]);
         
     }
 

@@ -56,4 +56,15 @@ class Branch extends Model
     // {
     //     return $this->hasMany(Parcel::class, 'to_branch_id');
     // }
+
+    public function couriers()
+{
+    return $this->hasMany(\Src\Courier\Models\Courier::class, 'branch_id');
+}
+
+public function fromParcels()
+{
+    return $this->hasMany(\Src\Parcel\Models\Parcel::class, 'from_branch_id');
+}
+
 }

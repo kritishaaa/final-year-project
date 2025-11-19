@@ -9,14 +9,12 @@
                         <div class="card-body">
                             <h5 class="card-title text-primary">{{ __('Welcome to Courier Management System') }}
                             </h5>
-                            <p class="mb-4">
-                                {{ __('Welcome to digital e-palika system.') }}
-                            </p>
+
                         </div>
                     </div>
                     <div class="col-sm-5 text-center text-sm-left">
                         <div class="card-body pb-0 px-0 px-md-4">
-                            <img src="{{ asset('assets/img/2807920.jpg') }}" height="160" alt="Hello" />
+                            <img src="{{ asset('assets/img/deliveri-logo.png') }}" height="160" alt="Hello" />
                         </div>
                     </div>
                 </div>

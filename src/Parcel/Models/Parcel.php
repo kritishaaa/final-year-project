@@ -24,7 +24,8 @@ class Parcel extends Model
         'sender_address',
         'sender_contact',
         'from_branch_id',
-        'to_branch_id',
+        'destination_latitude',
+        'destination_longitude',
         'weight',
         'distance',
         'price',
@@ -63,6 +64,11 @@ class Parcel extends Model
     public function assignments()
 {
     return $this->hasMany(ParcelAssignment::class, 'parcel_id');
+}
+
+public function tracks()
+{
+    return $this->hasMany(ParcelTrack::class);
 }
 
 }
