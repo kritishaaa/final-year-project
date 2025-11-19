@@ -12,7 +12,8 @@ class CreateParcelTracksTable extends Migration
         Schema::create('parcel_tracks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('parcel_id');
-            $table->tinyInteger('status');
+            $table->string('status')->nullable();
+            $table->string('message')->nullable();
             $table->string('location')->nullable();
              $table->timestamps();
 
