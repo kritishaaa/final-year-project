@@ -104,7 +104,7 @@
             <div class="layout-page">
                 <!-- Navbar -->
 
-                @include('courier.partials.courier-nav')
+                {{-- @include('courier.partials.courier-nav') --}}
                 <!-- / Navbar -->
 
                 <!-- Content wrapper -->

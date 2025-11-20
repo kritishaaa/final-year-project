@@ -37,7 +37,7 @@ class CourierAdminService
         ];
 
         
-        return $updateData->save();
+        return $courier->save();
     }
 
     public function delete(Courier $courier)

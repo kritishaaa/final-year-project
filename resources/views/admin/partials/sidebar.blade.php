@@ -20,7 +20,7 @@
                 style="
                     font-weight: 600; 
                     color: {{ $isActive ? '#2f3a3f' : '#fffdfa' }};
-                    background-color: {{ $isActive ? '#ffc29e' : 'transparent' }};
+                    background-color: {{ $isActive ? '#e3a37e' : 'transparent' }};
                     transition: all 0.2s ease-in-out;
                ">
                 <i class="{{ $item['icon'] }} fs-5" style="color: {{ $isActive ? '#2f3a3f' : '#d8a04b' }};"></i>

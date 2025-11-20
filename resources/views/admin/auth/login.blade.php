@@ -28,7 +28,7 @@
 
         /* Left Side - Branding */
         .login-left {
-            background: linear-gradient(135deg, #e8634b 0%, #e8634b 100%);
+            background: linear-gradient(135deg, #e3a37e 0%, #e3a37e 100%);
             color: white;
             display: flex;
             flex-direction: column;
@@ -193,7 +193,7 @@
 
         .form-input:focus {
             outline: none;
-            border-color: #e8634b;
+            border-color: #e3a37e;
             box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
         }
 
@@ -219,7 +219,7 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: #e8634b;
+            accent-color: #e3a37e;
         }
 
         .form-remember label {
@@ -228,20 +228,20 @@
         }
 
         .form-forgot {
-            color: #e8634b;
+            color: #e3a37e;
             text-decoration: none;
             font-weight: 600;
             transition: color 0.2s ease;
         }
 
         .form-forgot:hover {
-            color: #e8634b;
+            color: #e3a37e;
         }
 
         .btn-login {
             width: 100%;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #e8634b 0%, #e8634b 100%);
+            background: linear-gradient(135deg, #e3a37e 0%, #e3a37e 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -353,14 +353,10 @@
                         <i class='bx bx-package'></i>
                     </div>
                 </div>
-                <div class="logo-text">CourierHub</div>
+                <div class="logo-text">Courier Management System</div>
                 <p class="login-subtitle">Professional Courier Management System</p>
 
-                <div class="courier-illustration">
-                    <div class="illustration-placeholder">
-                        <i class='bx bx-truck'></i>
-                    </div>
-                </div>
+
             </div>
         </div>
 

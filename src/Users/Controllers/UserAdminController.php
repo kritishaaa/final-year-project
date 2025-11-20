@@ -30,6 +30,6 @@ class UserAdminController extends Controller
         $user = User::find($request->route('id'));
         $action = Action::UPDATE;
        
-        return view('Users::form')->with(compact('action'));
+        return view('Users::form')->with(compact('action', 'user'));
     }
 }

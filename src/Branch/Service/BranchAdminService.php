@@ -37,7 +37,7 @@ class BranchAdminService
         ];
 
         
-        return $updateData->save();
+        return $branch->save();
     }
 
     public function delete(Branch $branch)

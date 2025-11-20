@@ -20,11 +20,11 @@ class CourierTable extends DataTableComponent
     protected $model = Courier::class;
     public function configure(): void
     {
-        $this->setPrimaryKey('id')
+        $this->setPrimaryKey('couriers.id')
             ->setTableAttributes([
                 'class' => "table table-bordered table-hover text-center",
             ])
-            ->setAdditionalSelects(['id'])
+            ->setAdditionalSelects(['couriers.id'])
             ->setPerPageAccepted([10, 25, 50, 100, 500])
             ->setSelectAllEnabled()
             ->setRefreshMethod('refresh');
@@ -32,9 +32,10 @@ class CourierTable extends DataTableComponent
     public function builder(): Builder
     {
         return Courier::query()
+        ->with(['user', 'branch'])
            
-            ->whereNull('deleted_at')
-            ->orderBy('created_at', 'DESC');
+            ->whereNull('couriers.deleted_at')
+            ->orderBy('couriers.created_at', 'DESC');
     }
     public function filters(): array
     {
@@ -44,16 +45,16 @@ class CourierTable extends DataTableComponent
     public function columns(): array
     {
         $columns = [
-            Column::make("User", "user_id")
+            Column::make("User", "user.name")
                 ->searchable(),
-            Column::make("Branch", "branch_id")
+            Column::make("Branch", "branch.name")
                 ->searchable(),
-            Column::make("vehicle_number", "vehicle_number")
+            Column::make("vehicle number", "vehicle_number")
                 ->searchable(),
-            Column::make("contact_number", "contact_number")
+            Column::make("contact number", "contact_number")
                 ->searchable(),
-            Column::make("active", "active")
-                ->searchable(),
+            // Column::make("active", "active")
+            //     ->searchable(),
             
             
         ];

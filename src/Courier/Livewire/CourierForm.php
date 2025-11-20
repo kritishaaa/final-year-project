@@ -71,7 +71,7 @@ class CourierForm extends Component
                     return  redirect()->route('admin.couriers.index');
 
                 case Action::UPDATE:
-                    $service->update($this->user, $dto);
+                    $service->update($this->courier, $dto);
                     DB::commit();
                     $this->successFlash(__('Courier Updated Successfully'));
                     // return redirect()->back();

@@ -84,7 +84,7 @@ class BranchTable extends DataTableComponent
     public function edit($id)
     {
         
-        return redirect()->route('admin.branch.edit', ['id' => $id]);
+        return redirect()->route('admin.branches.edit', ['id' => $id]);
     }
     public function delete($id)
     {

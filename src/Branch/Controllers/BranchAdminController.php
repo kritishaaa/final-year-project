@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Src\Branch\Models\Branch;
 
 class BranchAdminController extends Controller
 {
@@ -27,9 +28,9 @@ class BranchAdminController extends Controller
 
     function edit(Request $request)
     {
-        $user = User::find($request->route('id'));
+        $branch = Branch::find($request->route('id'));
         $action = Action::UPDATE;
        
-        return view('Branch::form')->with(compact('action'));
+        return view('Branch::form')->with(compact('action', 'branch'));
     }
 }

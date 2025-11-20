@@ -271,7 +271,7 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <p class="mb-2">
-                                                    <strong>To:</strong><br>{{ collect($branches)->firstWhere('id', $parcel->to_branch_id)['name'] ?? 'N/A' }}
+                                                    <strong>To:</strong><br>{{ $parcel->recipient_address }}
                                                 </p>
                                             </div>
                                             @if ($parcel->remarks)

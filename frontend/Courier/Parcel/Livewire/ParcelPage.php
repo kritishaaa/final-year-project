@@ -43,6 +43,7 @@ class ParcelPage extends Component
     }
     public function assignMe($parcelId)
     {
+
         $parcel = $this->parcels->firstWhere('id', $parcelId);
 
         if (!$parcel) {
@@ -56,10 +57,11 @@ class ParcelPage extends Component
             return;
         }
 
+       $courier = Courier::where('user_id', auth()->id())->first();
        
         ParcelAssignment::create([
             'parcel_id' => $parcel->id,
-            'courier_id' => auth()->user()->id,
+            'courier_id' => $courier->id,
             'status' => 'assigned',
             'assigned_at' => Carbon::now(),
         ]);

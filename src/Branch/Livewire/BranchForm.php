@@ -52,6 +52,17 @@ class BranchForm extends Component
   
     public function save()
     {
+        try {
+        // Define your validation rules
+        $this->validate();
+
+} catch (\Illuminate\Validation\ValidationException $e) {
+    // Catch validation exceptions and dd the errors
+    dd($e->errors()); // Returns an array of validation error messages
+} catch (\Exception $e) {
+    // Catch any other exceptions and dd the message
+    dd($e->getMessage());
+}
         $this->validate();
 
         $dto = BranchAdminDto::fromLiveWireModel($this->branch);
@@ -67,7 +78,7 @@ class BranchForm extends Component
                     return  redirect()->route('admin.branches.index');
 
                 case Action::UPDATE:
-                    $service->update($this->user, $dto);
+                    $service->update($this->branch, $dto);
                     DB::commit();
                     $this->successFlash(__('Branch Updated Successfully'));
                     // return redirect()->back();
