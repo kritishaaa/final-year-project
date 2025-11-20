@@ -11,17 +11,20 @@ use Src\Parcel\Models\ParcelTrack;
 
 class ParcelAdminController extends Controller
 {
-    
+
 
     function index(Request $request)
     {
-        return view('Parcel::index');
+        $parcels = Parcel::with('fromBranch') // eager load branch
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+        return view('Parcel::index', compact('parcels'));
     }
 
     function create(Request $request)
     {
         $action = Action::CREATE;
-        
+
         return view('Parcel::form')->with(compact('action'));
     }
 
@@ -29,21 +32,29 @@ class ParcelAdminController extends Controller
     {
         $parcel = Parcel::find($request->route('id'));
         $action = Action::UPDATE;
-       
-        return view('Parcel::form')->with(compact('action', 'parcel') );
+
+        return view('Parcel::form')->with(compact('action', 'parcel'));
     }
     function view(Request $request)
     {
         $parcel = Parcel::find($request->route('id'));
         $assignedCouriers = ParcelAssignment::with('courier.user')
-        ->where('parcel_id', $parcel->id)
-        ->get();
-        $parcelTracks= ParcelTrack::where('parcel_id', $parcel->id)
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->where('parcel_id', $parcel->id)
+            ->get();
+        $parcelTracks = ParcelTrack::where('parcel_id', $parcel->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // dd($parcelTracks);
-       
-        return view('Parcel::show')->with(compact( 'parcel', 'assignedCouriers', 'parcelTracks') );
+
+        return view('Parcel::show')->with(compact('parcel', 'assignedCouriers', 'parcelTracks'));
+    }
+    public function destroy($id)
+    {
+        $parcel = Parcel::findOrFail($id);
+
+        $parcel->delete();
+
+        return redirect()->route('admin.parcels.index');
     }
 }

@@ -22,15 +22,18 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}" />
     <link rel="stylesheet" href="{{ asset('custom.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <link rel="stylesheet" href="{{ asset('home/tableStyle.css') }}" />
-
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@100..900&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-bs5.min.css" rel="stylesheet">
     <style>
@@ -43,25 +46,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"
         integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <!-- Tailwind CSS CDN -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        
-        <!-- Optional: Tailwind config -->
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            primary: '#1d4ed8', // example
-                            secondary: '#9333ea',
-                        },
-                        fontFamily: {
-                            sans: ['Public Sans', 'ui-sans-serif', 'system-ui'],
-                        },
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Optional: Tailwind config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1d4ed8', // example
+                        secondary: '#9333ea',
+                    },
+                    fontFamily: {
+                        sans: ['Public Sans', 'ui-sans-serif', 'system-ui'],
                     },
                 },
-            }
-        </script>
+            },
+        }
+    </script>
 
     @livewireStyles
     <link rel="stylesheet"
@@ -78,7 +81,6 @@
                     <a href="{{ route('admin.dashboard') }}"
                         class="app-brand-link d-flex flex-column align-items-center">
 
-
                         <div style="border-top: 1px solid #ccc; width: 100%; margin: 10px 0;"></div>
                         <div class="app-brand-text demo menu-text fw-bolder"
                             style="font-size: 20px; margin-top: 15px; text-align: center; text-transform: uppercase;">
@@ -86,7 +88,6 @@
                         </div>
                         <div style="border-top: 1px solid #ccc; width: 100%; margin: 10px 0;"></div>
                     </a>
-
 
                 </div>
 
@@ -104,7 +105,7 @@
             <div class="layout-page">
                 <!-- Navbar -->
 
-                @include('admin.partials.nav')
+                {{-- @include('admin.partials.nav') --}}
                 <!-- / Navbar -->
 
                 <!-- Content wrapper -->

@@ -47,4 +47,8 @@ class Courier extends Model
     {
         return $this->belongsTo(\Src\Branch\Models\Branch::class);
     }
+    public function parcelAssignments()
+    {
+        return $this->hasMany(\Src\Parcel\Models\ParcelAssignment::class, 'courier_id');
+    }
 }

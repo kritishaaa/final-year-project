@@ -16,6 +16,7 @@ class AssignmentPage extends Component
     public $optimizedAssignments = []; // will hold parcels in optimized order
     public $totalDistance = 0;
     public $totalPrice = 0;
+    public $courier;
 
     
     public function render(){
@@ -25,6 +26,8 @@ class AssignmentPage extends Component
     public function mount(Collection $assignments)
     {
         $this->assignments = $assignments;
+        $this->courier = Courier::where('user_id', auth()->user()->id)->with('branch')->first();
+
     }
 
 

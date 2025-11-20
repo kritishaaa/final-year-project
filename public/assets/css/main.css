@@ -1,0 +1,7 @@
+.bg-menu-theme {
+    background-color: #2f3a3f !important;
+}
+
+.bg-menu-theme .menu-link.active .menu-icon {
+    color: #2f3a3f !important;
+}

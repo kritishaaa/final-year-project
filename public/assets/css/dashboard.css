@@ -1,0 +1,227 @@
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Roboto", sans-serif;
+    background-color: #f1f5f9; /* Soft dashboard background */
+    color: #1e293b;
+}
+
+/* Welcome Card */
+.welcome-card {
+    background: linear-gradient(135deg, #fbf8f4 0%, #d8c291 100%);
+    color: #5a4b36; /* Warm dark brown for headlines */
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0px 10px 25px rgba(125, 96, 46, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+}
+
+.welcome-card:hover {
+    transform: translateY(-1px);
+}
+
+/* Soft glow in gold */
+.welcome-card::after {
+    content: "";
+    position: absolute;
+    top: -50px;
+    right: -40px;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.35);
+    filter: blur(60px);
+    border-radius: 50%;
+}
+
+.welcome-card h3 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #4a3d2c;
+}
+
+.welcome-card .text-muted {
+    color: rgba(74, 61, 44, 0.75) !important;
+}
+
+/* Stat Badge - Gold Glassmorphism */
+.stat-badge {
+    background: rgba(255, 255, 255, 0.35);
+    padding: 1rem 1.4rem;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(150, 120, 60, 0.35);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(150, 120, 60, 0.15);
+    transition: 0.25s;
+}
+
+.stat-badge:hover {
+    background: rgba(255, 255, 255, 0.45);
+    transform: translateY(-3px);
+}
+
+/* Icon Color */
+.stat-icon i {
+    font-size: 2rem;
+    color: #6f5838; /* Gold-brown tone */
+}
+
+/* Label inside Badge */
+.stat-badge small {
+    color: #6f5838 !important;
+}
+.date-time-badge {
+    background: #fef6e4; /* Soft creamy background */
+    color: #b45309; /* Rich brown/golden text */
+    border: 1px solid #fcd9a6; /* Light border */
+    border-radius: 25px; /* Pill shape */
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.date-time-badge i {
+    font-size: 14px;
+}
+
+.date-time-badge .separator {
+    font-weight: 900;
+    opacity: 0.6;
+}
+
+/* Keep your existing info-card styles */
+.info-card {
+    color: #5a4b36; /* default text */
+    background-color: #f7f2e4;
+    padding: 1.8rem 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+/* Icons */
+.card-icon {
+    font-size: 2rem;
+}
+
+/* Icon Colors */
+.icon-yellow {
+    color: #fbbf24;
+}
+.icon-green {
+    color: #34d399;
+}
+.icon-blue {
+    color: #3b82f6;
+}
+.icon-red {
+    color: #f87171;
+}
+
+/* Typography */
+.info-card h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.info-card h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #6f5838; /* Dark brown number */
+}
+
+.dashboard-card {
+    background-color: #f7f2e4; /* Light cream, matching other cards */
+    padding: 1.8rem 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-card .card-title {
+    font-weight: 700;
+    color: #5a4b36; /* Dark brown */
+}
+.table-dark-text th,
+.table-dark-text tr,
+.table-dark-text td {
+    color: #5a4b36 !important; /* dark brown */
+}
+.end-item {
+    height: 300px;
+    overflow: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.end-item::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+.status-item {
+    margin-bottom: 1rem;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.status-label {
+    font-weight: 600;
+    color: #5a4b36;
+}
+
+.status-count {
+    font-weight: 700;
+    color: #6f5838; /* Dark brown for number */
+}
+
+.status-pct {
+    font-size: 0.85rem;
+    color: #8c7a66; /* Lighter brown for percentage */
+}
+
+.progress-modern {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(0, 0, 0, 0.05); /* subtle background */
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 0.3rem;
+}
+
+.progress-bar-modern {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease-in-out;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .dashboard-card {
+        padding: 1.2rem 1rem;
+    }
+}
+
+.dark-font {
+    color: rgba(90, 75, 54, 0.7);
+}

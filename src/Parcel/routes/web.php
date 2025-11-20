@@ -9,4 +9,6 @@ Route::group(['prefix' => 'admin/parcels', 'as' => 'admin.parcels.', 'middleware
     Route::get('/create', [ParcelAdminController::class, 'create'])->name('create');
     Route::get('/edit/{id}', [ParcelAdminController::class, 'edit'])->name('edit');
     Route::get('/show/{id}', [ParcelAdminController::class, 'view'])->name('view');
+    Route::delete('/destory/{id}', [ParcelAdminController::class, 'destroy'])
+        ->name('destroy');
 });

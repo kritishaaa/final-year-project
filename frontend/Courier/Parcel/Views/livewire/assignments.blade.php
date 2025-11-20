@@ -200,4 +200,86 @@
         </div>
     @endif
 
+    <div class="container py-5">
+
+        <h2 class="mb-4">Optimized Delivery Route</h2>
+
+        {{-- Summary of optimized route --}}
+        @if (!empty($optimizedAssignments))
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Route Order</h4>
+                    <ol>
+                        @foreach ($optimizedAssignments as $item)
+                            <li>
+                                <strong>{{ $item['parcel']['tracking_code'] }}</strong>
+                                — {{ $item['parcel']['recipient_name'] }}
+                                ({{ $item['parcel']['destination_latitude'] }},
+                                {{ $item['parcel']['destination_longitude'] }})
+                            </li>
+                        @endforeach
+                    </ol>
+                </div>
+            </div>
+
+            {{-- MAP CONTAINER --}}
+            <div id="routeMap" style="height: 450px; width: 100%;" class="rounded shadow-sm">
+            </div>
+        @else
+            <div class="alert alert-info">No route available.</div>
+        @endif
+
+    </div>
+    {{-- LEAFLET CSS/JS --}}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        function loadRouteMap() {
+            let container = document.getElementById('routeMap');
+            if (!container) return;
+
+            const route = @json($optimizedAssignments);
+            if (!route || !route.length) return;
+
+            container.innerHTML = ""; // reset
+
+            const branch = {
+                lat: {{ $courier->branch->latitude }},
+                lng: {{ $courier->branch->longitude }}
+            };
+
+            const map = L.map('routeMap').setView([route[0].parcel.destination_latitude, route[0].parcel
+                .destination_longitude
+            ], 13);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                maxZoom: 22
+            }).addTo(map);
+
+            let points = [];
+
+            points.push([branch.lat, branch.lng]);
+            L.marker([branch.lat, branch.lng]).addTo(map).bindPopup("Courier Base");
+
+            route.forEach((item, index) => {
+                let lat = item.parcel.destination_latitude;
+                let lng = item.parcel.destination_longitude;
+
+                points.push([lat, lng]);
+                L.marker([lat, lng]).addTo(map)
+                    .bindPopup(`Stop ${index + 1}<br>${item.parcel.tracking_code}`);
+            });
+
+            L.polyline(points, {
+                color: "blue"
+            }).addTo(map);
+            map.fitBounds(points);
+        }
+
+        // RUN after Livewire loads + updates
+        document.addEventListener("livewire:load", loadRouteMap);
+        Livewire.hook('message.processed', loadRouteMap);
+    </script>
+
 </div>
