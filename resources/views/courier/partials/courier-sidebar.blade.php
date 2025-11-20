@@ -51,7 +51,6 @@
             ['route' => 'courier.dashboard', 'icon' => 'fa fa-tachometer-alt', 'label' => 'Dashboard'],
             ['route' => 'courier.parcels.index', 'icon' => 'fa fa-box', 'label' => 'All Parcels'],
             ['route' => 'courier.parcels.assign', 'icon' => 'fa fa-building', 'label' => 'Assigned Parcels'],
-            
         ];
     @endphp
 
@@ -110,4 +109,3 @@
         color: rgba(255, 255, 255, 0.5) !important;
     }
 </style>
-
