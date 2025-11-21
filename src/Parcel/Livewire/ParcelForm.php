@@ -149,7 +149,7 @@ class ParcelForm extends Component
             // --- Price calculation ---
             $baseRate = 50;      // Base rate in Rs
             $perKm = 10;         // Rs per km
-            $perKg = 20;         // Rs per kg
+            $perKg = 5;         // Rs per kg
             $weight = $this->parcel->weight ?? 1; // default weight = 1 kg
 
             $this->parcel->price = round(

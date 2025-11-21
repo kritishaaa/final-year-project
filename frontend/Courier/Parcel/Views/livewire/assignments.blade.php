@@ -5,9 +5,12 @@
             class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm font-semibold transition">
             Optimize Route
         </button>
+        <button onclick="printPDF()" class="ms-2 px-4 py-2 bg-blue-600 text-white rounded">
+            Print Route
+        </button>
+        <div id="pdfLoader" style="display:none;">Generating PDF...</div>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
-
 
         @foreach ($assignments as $assignment)
             @php
@@ -178,80 +181,110 @@
             </div>
         @endforeach
     </div>
-    @if (!empty($optimizedAssignments))
-        <div class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 class="font-bold text-gray-800 mb-2">Optimized Route Summary</h3>
-            <p>Total Distance: <span class="font-semibold">{{ number_format($totalDistance, 2) }} km</span></p>
-            <p>Total Price: <span class="font-semibold">Rs. {{ number_format($totalPrice, 2) }}</span></p>
-
-            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach ($optimizedAssignments as $assignment)
-                    @php $parcel = $assignment['parcel']; @endphp
-                    <div class="p-3 bg-white border rounded-lg shadow-sm">
-                        <h4 class="font-bold">#{{ $parcel['tracking_code'] }}</h4>
-                        <p class="text-sm text-gray-600">Recipient: {{ $parcel['recipient_name'] }}</p>
-                        <p class="text-sm text-gray-600 truncate">Address: {{ $parcel['recipient_address'] }}</p>
-                        <p class="text-sm text-gray-500">Distance from last stop:
-                            {{ number_format($parcel['distance'], 2) }} km
-                        </p>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
-    <div class="container py-5">
-
-        <h2 class="mb-4">Optimized Delivery Route</h2>
-
-        {{-- Summary of optimized route --}}
+    <div id="printArea">
         @if (!empty($optimizedAssignments))
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h4 class="mb-3">Route Order</h4>
-                    <ol>
+            <div class="mt-6 p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-lg border border-gray-200">
+                <h3 class="font-extrabold text-gray-800 mb-4 text-xl">Optimized Route Summary</h3>
+                <p class="text-lg font-semibold text-gray-700">Total Distance: <span
+                        class="font-bold text-indigo-600">{{ number_format($totalDistance, 2) }} km</span></p>
+                <p class="text-lg font-semibold text-gray-700">Total Price: <span class="font-bold text-green-600">Rs.
+                        {{ number_format($totalPrice, 2) }}</span></p>
+
+                <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach ($optimizedAssignments as $assignment)
+                        @php $parcel = $assignment['parcel']; @endphp
+
+                        <div
+                            class="p-4 bg-white border border-gray-300 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                            <h4 class="font-semibold text-xl text-blue-700">#{{ $parcel['tracking_code'] }}</h4>
+                            <p class="text-sm text-gray-600">Recipient: <span
+                                    class="font-medium text-gray-800">{{ $parcel['recipient_name'] }}</span></p>
+                            <p class="text-sm text-gray-600 truncate">Address: {{ $parcel['recipient_address'] }}</p>
+                            <p class="text-sm text-gray-600 truncate">Phone: {{ $parcel['sender_contact'] }}</p>
+                            <p class="text-sm text-gray-500">Distance from last stop: <span
+                                    class="font-semibold text-blue-500">{{ number_format($parcel['distance'], 2) }}
+                                    km</span></p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+        @endif
+
+        <div class="mb-3">
+
+            {{-- <h2 class="mb-4">Optimized Delivery Route</h2> --}}
+
+            {{-- Summary of optimized route --}}
+            @if (!empty($optimizedAssignments))
+                <div
+                    class="mt-6 p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-lg border border-gray-200">
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-4">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Optimized Delivery Route</h2>
+                    </h4>
+                    <ol class="space-y-4">
                         @foreach ($optimizedAssignments as $item)
-                            <li>
-                                <strong>{{ $item['parcel']['tracking_code'] }}</strong>
-                                — {{ $item['parcel']['recipient_name'] }}
-                                ({{ $item['parcel']['destination_latitude'] }},
-                                {{ $item['parcel']['destination_longitude'] }})
+                            <li
+                                class="p-4 bg-white border border-gray-300 rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                                <div class="flex justify-between items-center">
+                                    <span
+                                        class="font-semibold text-indigo-600">{{ $item['parcel']['tracking_code'] }}</span>
+                                    <span
+                                        class="font-medium text-gray-800">{{ $item['parcel']['recipient_name'] }}</span>
+                                </div>
+                                <div class="mt-2 text-xs text-gray-500">
+                                    <span>Coordinates: </span>
+                                    <span
+                                        class="font-semibold text-blue-500">({{ $item['parcel']['destination_latitude'] }},
+                                        {{ $item['parcel']['destination_longitude'] }})</span>
+                                </div>
                             </li>
                         @endforeach
                     </ol>
                 </div>
+
+                {{-- MAP CONTAINER --}}
+            @else
+                <div class="alert alert-info" style="color: #000;">No route available.</div>
+            @endif
+            <div wire:ignore class="mt-4">
+                <div id="routeMap" style="height: 450px; width: 100%;" class="rounded shadow-sm"></div>
             </div>
 
-            {{-- MAP CONTAINER --}}
-            <div id="routeMap" style="height: 450px; width: 100%;" class="rounded shadow-sm">
-            </div>
-        @else
-            <div class="alert alert-info">No route available.</div>
-        @endif
-
+        </div>
     </div>
-    {{-- LEAFLET CSS/JS --}}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="https://rawcdn.githack.com/mapbox/leaflet-image/gh-pages/leaflet-image.js"></script>
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script>
+        let optimizedRouteData = [];
+        let map; // Make map global for printing
+
+        document.addEventListener("livewire:initialized", () => {
+            Livewire.on("route-optimized", (data) => {
+                optimizedRouteData = data.route;
+                loadRouteMap();
+            });
+        });
+
         function loadRouteMap() {
-            let container = document.getElementById('routeMap');
+            const container = document.getElementById("routeMap");
             if (!container) return;
+            if (!optimizedRouteData || optimizedRouteData.length === 0) return;
 
-            const route = @json($optimizedAssignments);
-            if (!route || !route.length) return;
+            // Reset map if it exists
+            if (container._leaflet_id) container._leaflet_id = null;
 
-            container.innerHTML = ""; // reset
-
-            const branch = {
-                lat: {{ $courier->branch->latitude }},
-                lng: {{ $courier->branch->longitude }}
-            };
-
-            const map = L.map('routeMap').setView([route[0].parcel.destination_latitude, route[0].parcel
-                .destination_longitude
-            ], 13);
+            // Initialize map
+            map = L.map("routeMap").setView(
+                [optimizedRouteData[0].parcel.destination_latitude, optimizedRouteData[0].parcel.destination_longitude],
+                13
+            );
 
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 maxZoom: 22
@@ -259,27 +292,102 @@
 
             let points = [];
 
+            // Courier Base
+            const branch = {
+                lat: {{ $courier->branch->latitude }},
+                lng: {{ $courier->branch->longitude }}
+            };
             points.push([branch.lat, branch.lng]);
-            L.marker([branch.lat, branch.lng]).addTo(map).bindPopup("Courier Base");
 
-            route.forEach((item, index) => {
-                let lat = item.parcel.destination_latitude;
-                let lng = item.parcel.destination_longitude;
+            const baseIcon = L.icon({
+                iconUrl: '/icons/base.png',
+                iconSize: [35, 35]
+            });
+            L.marker([branch.lat, branch.lng], {
+                    icon: baseIcon
+                })
+                .addTo(map)
+                .bindPopup("Courier Base")
+                .bindTooltip("Base", {
+                    permanent: true,
+                    direction: "top"
+                });
 
-                points.push([lat, lng]);
-                L.marker([lat, lng]).addTo(map)
-                    .bindPopup(`Stop ${index + 1}<br>${item.parcel.tracking_code}`);
+            // Stop markers
+            const stopIcon = L.icon({
+                iconUrl: '/icons/stop.png',
+                iconSize: [25, 25]
             });
 
-            L.polyline(points, {
-                color: "blue"
-            }).addTo(map);
-            map.fitBounds(points);
-        }
+            optimizedRouteData.forEach((item, index) => {
+                const lat = item.parcel.destination_latitude;
+                const lng = item.parcel.destination_longitude;
+                points.push([lat, lng]);
 
-        // RUN after Livewire loads + updates
-        document.addEventListener("livewire:load", loadRouteMap);
-        Livewire.hook('message.processed', loadRouteMap);
+                L.marker([lat, lng], {
+                        icon: stopIcon
+                    })
+                    .addTo(map)
+                    .bindPopup(`Stop ${index + 1}: ${item.parcel.tracking_code}`)
+                    .bindTooltip(`${index + 1}`, {
+                        permanent: true,
+                        direction: "top"
+                    });
+            });
+
+            // Road route with OSRM
+            const osrmCoordString = points.map(p => `${p[1]},${p[0]}`).join(";");
+            const osrmUrl =
+                `https://router.project-osrm.org/route/v1/driving/${osrmCoordString}?overview=full&geometries=geojson`;
+
+            fetch(osrmUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.routes || !data.routes.length) return;
+                    const geojson = data.routes[0].geometry;
+                    L.geoJSON(geojson, {
+                        style: {
+                            color: "blue",
+                            weight: 4
+                        }
+                    }).addTo(map);
+                    map.fitBounds(L.geoJSON(geojson).getBounds());
+                })
+                .catch(err => console.error("OSRM error:", err));
+        }
+    </script>
+
+    <script>
+        async function printPDF() {
+            const {
+                jsPDF
+            } = window.jspdf;
+
+            // Select the content
+            const element = document.getElementById("printArea");
+
+            // Disable tooltips/popups for clean print
+            document.querySelectorAll('.leaflet-tooltip').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.leaflet-popup').forEach(el => el.style.display = 'none');
+
+            // Capture screenshot
+            const canvas = await html2canvas(element, {
+                useCORS: true,
+                scale: 2, // high quality
+                logging: false,
+                allowTaint: true
+            });
+
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+            pdf.save("route-print.pdf");
+        }
     </script>
 
 </div>

@@ -18,8 +18,9 @@ class AssignmentPage extends Component
     public $totalPrice = 0;
     public $courier;
 
-    
-    public function render(){
+
+    public function render()
+    {
         return view("Courier.Parcel::livewire.assignments");
     }
 
@@ -27,23 +28,22 @@ class AssignmentPage extends Component
     {
         $this->assignments = $assignments;
         $this->courier = Courier::where('user_id', auth()->user()->id)->with('branch')->first();
-
     }
 
 
-     public function updateStatus($assignmentId, $status)
+    public function updateStatus($assignmentId, $status)
     {
         $assignment = ParcelAssignment::find($assignmentId);
-    
+
         if (!$assignment) {
             $this->flashError('Assignment not found!');
             return;
         }
-    
+
         // Update assignment status
         $assignment->status = $status;
         $assignment->update();
-    
+
         // Add tracking message
         $statusMessages = [
             'assigned'   => 'Your parcel has been assigned to a courier.',
@@ -52,9 +52,9 @@ class AssignmentPage extends Component
             'delivered'  => 'Your parcel has been delivered successfully.',
             'returned'   => 'Your parcel could not be delivered and is being returned.',
         ];
-    
+
         $message = $statusMessages[$status] ?? 'Status updated.';
-    
+
         // Save tracking
         \Src\Parcel\Models\ParcelTrack::create([
             'parcel_id' => $assignment->parcel_id,
@@ -62,16 +62,16 @@ class AssignmentPage extends Component
             'message'   => $message,
             'location'  => $assignment->parcel->destination_address ?? null, // optional
         ]);
-    
+
         $this->assignments = $this->assignments->map(function ($a) use ($assignmentId, $status) {
             if ($a->id == $assignmentId) {
                 $a->status = $status;
             }
             return $a;
         });
-    
+
         $this->successFlash("Status updated to " . ucfirst(str_replace('_', ' ', $status)) . "!");
-    
+
         return redirect()->route('courier.parcels.assign');
     }
 
@@ -127,6 +127,8 @@ class AssignmentPage extends Component
         }
 
         $this->optimizedAssignments = $route;
+        $this->dispatch('route-optimized', route: $route);
+
         $this->totalDistance = $totalDistance;
         $this->totalPrice = $totalPrice;
     }
@@ -145,7 +147,4 @@ class AssignmentPage extends Component
 
         return 2 * $earth * asin(sqrt($a));
     }
-
-   
-
 }

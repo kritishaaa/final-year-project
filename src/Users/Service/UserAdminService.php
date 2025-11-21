@@ -17,6 +17,7 @@ class UserAdminService
         $user =  User::create([
             'name' => $userAdminDto->name,
             'email' => $userAdminDto->email,
+            'role' => 'courier',
             'password' => $userAdminDto->password,
             'mobile_no' => $userAdminDto->mobile_no,
             'signature' => $userAdminDto->signature,
